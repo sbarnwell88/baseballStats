@@ -24,8 +24,6 @@ router.route('/')
 router.route('/:id')
     .get(async (req, res) => {
 
-        console.log(req.params.id)
-
         let teamProfile;
 
         try {
@@ -35,7 +33,6 @@ router.route('/:id')
             console.error(err)
         }
         const players = teamProfile.players.filter((item) => item.position === 'P')
-        console.log(players)
         return res.json(players)
     })
 

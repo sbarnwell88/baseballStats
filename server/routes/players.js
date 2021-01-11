@@ -7,8 +7,6 @@ const axios = require('axios')
 router.route('/:id')
     .get(async (req, res) => {
 
-        console.log(req.params.id)
-
         let playerProfile;
 
         try {
@@ -17,7 +15,6 @@ router.route('/:id')
             console.error(err)
         }
         const player = playerProfile.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
-        console.log(player)
         return res.json(player)
     })
 

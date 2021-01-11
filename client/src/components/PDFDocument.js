@@ -1,9 +1,11 @@
-import React from 'react'
-import { Page, Text, View, Document, StyleSheet, PDFViewer, Font } from '@react-pdf/renderer';
+import React, {useEffect, useState} from 'react'
+import axios from 'axios'
+import { Page, Text, View, Document, StyleSheet, PDFViewer, Font, Note, Canvas } from '@react-pdf/renderer';
 
 Font.register({
-    family: 'Oswald',
-    src: 'https://fonts.gstatic.com/s/oswald/v13/Y_TKV6o8WovbUd3m_X9aAA.ttf'
+    family: 'Roboto',
+     format: 'Light 300 italic',
+    src: './Roboto/Roboto-MediumItalic.ttf'
   });
 
 const styles = StyleSheet.create({
@@ -13,7 +15,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 35,
       },
     page: {
-      fontFamily: 'Oswald'
+    //   fontFamily: 'Roboto', 
     },
     section: {
       margin: 10,
@@ -26,9 +28,11 @@ const styles = StyleSheet.create({
   });
 
 export default function PDFDocument(props) {
-    console.log(props.pitcherData)
 
     const pitchCount = props.pitcherData[0] !== undefined ? props.pitcherData[0].totals.statistics.pitch_metrics.overall.count : 0
+    const pitchingProfile = props.playerProfile !== undefined ? props.playerProfile[0].totals.splits.pitching.overall[0].hitter_hand : ''
+    const homeAway = props.playerProfile !== undefined ? props.playerProfile[0].totals.splits.pitching.overall[0].home_away : ''
+    console.log(homeAway)
     
     return (
         props.pitcherData[0] !== undefined ? (
@@ -46,9 +50,27 @@ export default function PDFDocument(props) {
                                     <Text style={styles.text}>{(pitch.count/pitchCount*100).toFixed(2)}%</Text>
                                 </View>)
                     })}
-                    </View>
-                    <View style={styles.section}>
-                        <Text>Section #2</Text>
+                        <Text>R/L handed batters</Text>
+                        {pitchingProfile !== undefined && pitchingProfile.length > 0 ? pitchingProfile.map((hand) => {
+                            return (
+                                <View style={{display: 'flex', flexDirection: 'row'}}>
+                                    <Text style={styles.text}>{hand.value}-hand batter:</Text>
+                                    <Text style={styles.text}>{hand.oba}</Text>
+                                    <Text style={styles.text}>{hand.hr} hr</Text>
+                                </View>
+                            )
+                        }) : []}
+                        <Text>Home/Away</Text>
+                        {homeAway !== undefined && homeAway.length > 0 ? homeAway.map((item) => {
+                            return (
+                                <View style={{display: 'flex', flexDirection: 'row'}}>
+                                    <Text style={styles.text}>{item.value}:</Text>
+                                    <Text style={styles.text}>{item.win} wins</Text>
+                                    <Text style={styles.text}>{item.loss} losses</Text>
+                                    <Text style={styles.text}>{item.era} era</Text>
+                                </View>
+                            )
+                        }): []}
                     </View>
                 </Page>
             </Document>

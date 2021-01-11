@@ -25,6 +25,13 @@ export default function Home() {
   const [player, setPlayer] = useState([])
   const [pitcherData, setPitcherData] = useState([])
   const [playerName, setPlayerName] = useState('')
+  const [playerProfile, setPlayerProfile] = useState();
+
+  const getPitcherProfile = async () => {
+      const pitcher = await axios.get(`/profile/${player}`)
+      console.log(pitcher.data)
+      setPlayerProfile(pitcher.data)
+    }
 
   const getTeams = async () => {
     const schedule = await axios.get('/teams');
@@ -38,9 +45,8 @@ export default function Home() {
 
    const getPitcherStats = async () => {
     const pitcher = await axios.get(`/players/${player}`)
-    console.log(pitcher.data)
     setPitcherData(pitcher.data)
-}
+  }
 
   useEffect(() => {
     getTeams()
@@ -52,6 +58,7 @@ export default function Home() {
 
   useEffect(() => {
     getPitcherStats()
+    getPitcherProfile()
 }, [player]);
 
 const handleChange = (event) => {
@@ -90,7 +97,7 @@ const handlePlayerChange = (event, value) => {
             {playerData.map((player) => <MenuItem value={player.id} key={player.id}>{player.first_name} {player.last_name}</MenuItem>)}
         </Select>
       </FormControl>
-      <PDFDocument pitcherData={pitcherData} playerName={playerName} />
+      <PDFDocument pitcherData={pitcherData} playerName={playerName} playerProfile={playerProfile} />
     </div>
   );
 }
