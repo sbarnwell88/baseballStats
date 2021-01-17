@@ -3,6 +3,7 @@ const path = require('path');
 const teamsRoute = require('./routes/teams')
 const playersRoute = require('./routes/players')
 const playerProfile = require('./routes/playerProfile')
+require('dotenv').config()
 const app = express();
 // a test route to make sure we can reach the backend
 //this would normally go in a routes file

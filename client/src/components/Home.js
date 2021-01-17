@@ -27,49 +27,47 @@ export default function Home() {
   const [playerName, setPlayerName] = useState('')
   const [playerProfile, setPlayerProfile] = useState();
 
-  const getPitcherProfile = async () => {
-      const pitcher = await axios.get(`/profile/${player}`)
-      console.log(pitcher.data)
-      setPlayerProfile(pitcher.data)
-    }
+  const delay = ms => new Promise(res => setTimeout(res, ms));
+
+  const getPitcherProfile = async (playerId) => {
+    // setTimeout(() => console.log("delay"), 20000);
+    // console.log("after 5000")
+    await delay(5000);
+    const pitcher = await axios.get(`/profile/${playerId}`)
+    console.log("Waited 5s");
+    setPlayerProfile(pitcher.data)
+  }
 
   const getTeams = async () => {
     const schedule = await axios.get('/teams');
     setTeamData(schedule.data);
    };
 
-   const getPlayers = async () => {
-       const players = await axios.get(`/teams/${team}`)
+   const getPlayers = async (teamId) => {
+       const players = await axios.get(`/teams/${teamId}`)
        setPlayerData(players.data)
    }
 
-   const getPitcherStats = async () => {
-    const pitcher = await axios.get(`/players/${player}`)
+   const getPitcherStats = async (playerId) => {
+    const pitcher = await axios.get(`/players/${playerId}`)
     setPitcherData(pitcher.data)
+    getPitcherProfile(playerId)
   }
 
   useEffect(() => {
     getTeams()
   }, []);
 
-  useEffect(() => {
-      getPlayers()
-  }, [team]);
-
-  useEffect(() => {
-    getPitcherStats()
-    getPitcherProfile()
-}, [player]);
-
 const handleChange = (event) => {
     setTeam(event.target.value);
+    getPlayers(event.target.value)
 };
   
 const handlePlayerChange = (event, value) => {
-  console.log(event.target)
-  console.log(value.props.children)
     setPlayer(event.target.value);
     setPlayerName(value.props.children)
+    getPitcherStats(event.target.value)
+    // getPitcherProfile(event.target.value)
 };
 
 
@@ -97,7 +95,9 @@ const handlePlayerChange = (event, value) => {
             {playerData.map((player) => <MenuItem value={player.id} key={player.id}>{player.first_name} {player.last_name}</MenuItem>)}
         </Select>
       </FormControl>
-      <PDFDocument pitcherData={pitcherData} playerName={playerName} playerProfile={playerProfile} />
+      {playerProfile !== '' && playerProfile !== undefined ? 
+      <PDFDocument pitcherData={pitcherData} playerName={playerName} playerProfile={playerProfile} /> :
+      <div/>}
     </div>
   );
 }

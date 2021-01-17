@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
-import { Page, Text, View, Document, StyleSheet, PDFViewer, Font, Note, Canvas } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, PDFViewer, Font } from '@react-pdf/renderer';
 
 Font.register({
     family: 'Roboto',
