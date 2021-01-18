@@ -30,8 +30,6 @@ export default function Home() {
   const delay = ms => new Promise(res => setTimeout(res, ms));
 
   const getPitcherProfile = async (playerId) => {
-    // setTimeout(() => console.log("delay"), 20000);
-    // console.log("after 5000")
     await delay(5000);
     const pitcher = await axios.get(`/profile/${playerId}`)
     console.log("Waited 5s");
@@ -67,7 +65,6 @@ const handlePlayerChange = (event, value) => {
     setPlayer(event.target.value);
     setPlayerName(value.props.children)
     getPitcherStats(event.target.value)
-    // getPitcherProfile(event.target.value)
 };
 
 
