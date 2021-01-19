@@ -3,6 +3,8 @@ const router= express.Router()
 const fs = require('fs-extra')
 const path = require('path')
 const axios = require('axios')
+const { ListItemAvatar } = require('@material-ui/core')
+const { red } = require('@material-ui/core/colors')
 require('dotenv').config()
 const apiKey = process.env.API_KEY
 
@@ -20,7 +22,6 @@ router.route('/')
         }
         
         leagueSchedule.games.forEach((item) => teams.push({team: item.home.name, id: item.home.id}))
-        const uniqueArray = teams.filter((item, index) => teams.findIndex(obj => obj.team === item.team) === index)
 
         // MAKING REAL API CALLS
         // try {
@@ -30,8 +31,8 @@ router.route('/')
         // }
         
         // leagueSchedule.data.games.forEach((item) => teams.push({team: item.home.name, id: item.home.id}))
-        // const uniqueArray = teams.filter((item, index) => teams.findIndex(obj => obj.team === item.team) === index)
-
+        
+        const uniqueArray = teams.filter((item, index) => teams.findIndex(obj => obj.team === item.team) === index)
         return res.json(uniqueArray)
     })
 
@@ -57,6 +58,47 @@ router.route('/:id')
         // const players = teamProfile.data.players.filter((item) => item.position === 'P')
 
         return res.json(players)
+    })
+
+    router.route('/awayTeam/:id')
+    .get(async (req, res) => {
+
+        let awayTeams = [];
+        let leagueSchedule;
+        let homeTeams = [];
+
+        // USING JSON FILES
+        try {
+            leagueSchedule = await fs.readJson(path.join(__dirname, '../data/leagueSchedule.json'));
+        } catch (err) {
+            console.error(err)
+        }
+        
+        leagueSchedule.games.forEach((item) => {
+            if (item.home.id === req.params.id || item.away.id === req.params.id) {
+                awayTeams.push({team: item.home.name, id: item.home.id})
+                homeTeams.push({team: item.away.name, id: item.away.id})
+            }
+        })
+
+        // MAKING REAL API CALLS
+        // try {
+        //     leagueSchedule = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/games/2019/REG/schedule.json?api_key=' + apiKey)
+        // } catch (err) {
+        //     console.error(err)
+        // }
+        
+        // leagueSchedule.data.games.forEach((item) => {
+        //     if (item.home.id === req.params.id || item.away.id === req.params.id) {
+        //         awayTeams.push({team: item.home.name, id: item.home.id})
+        //         homeTeams.push({team: item.away.name, id: item.away.id})
+        //     }
+        // })
+
+        const opponentList = awayTeams.concat(homeTeams).filter((team) => team.id !== req.params.id)
+        const uniqueArray = opponentList.filter((item, index) => opponentList.findIndex(obj => obj.team === item.team) === index)
+        
+        return res.json(uniqueArray)
     })
 
 module.exports = router;

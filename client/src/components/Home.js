@@ -4,6 +4,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Button from '@material-ui/core/Button';
 import axios from 'axios'
 import PDFDocument from './PDFDocument';
 
@@ -19,8 +20,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home() {
   const classes = useStyles();
-  const [teamData, setTeamData] = useState([])
-  const [team, setTeam] = useState('')
+  const [homeTeamData, setHomeTeamData] = useState([])
+  const [homeTeam, setHomeTeam] = useState('')
+  const [awayTeamData, setAwayTeamData] = useState([])
+  const [awayTeam, setawayTeam] = useState('')
   const [playerData, setPlayerData] = useState([])
   const [player, setPlayer] = useState([])
   const [pitcherData, setPitcherData] = useState([])
@@ -31,67 +34,103 @@ export default function Home() {
 
   const getPitcherProfile = async (playerId) => {
     await delay(5000);
-    const pitcher = await axios.get(`/profile/${playerId}`)
+    const pitcher = await axios.get(`/players/profile/${playerId}`)
     console.log("Waited 5s");
     setPlayerProfile(pitcher.data)
   }
 
-  const getTeams = async () => {
+  const getHomeTeam = async () => {
     const schedule = await axios.get('/teams');
-    setTeamData(schedule.data);
+    setHomeTeamData(schedule.data);
    };
 
-   const getPlayers = async (teamId) => {
-       const players = await axios.get(`/teams/${teamId}`)
-       setPlayerData(players.data)
-   }
+   const getAwayTeam = async (teamId) => {
+    const schedule = await axios.get(`/teams/awayTeam/${teamId}`);
+    console.log(schedule.data)
+    setAwayTeamData(schedule.data);
+   };
 
-   const getPitcherStats = async (playerId) => {
+  const getPlayers = async (teamId) => {
+      const players = await axios.get(`/teams/${teamId}`)
+      setPlayerData(players.data)
+  }
+
+  const getPitcherStats = async (playerId) => {
     const pitcher = await axios.get(`/players/${playerId}`)
     setPitcherData(pitcher.data)
     getPitcherProfile(playerId)
-  }
+}
 
   useEffect(() => {
-    getTeams()
+    getHomeTeam()
   }, []);
 
-const handleChange = (event) => {
-    setTeam(event.target.value);
+const handleHomeTeamChange = (event) => {
+    setHomeTeam(event.target.value);
     getPlayers(event.target.value)
+    // getAwayTeam(event.target.value)
+};
+
+const handleAwayTeamChange = (event) => {
+  setawayTeam(event.target.value);
 };
   
 const handlePlayerChange = (event, value) => {
     setPlayer(event.target.value);
     setPlayerName(value.props.children)
-    getPitcherStats(event.target.value)
 };
+
+const handleOnClick = () => {
+  getPitcherStats(player)
+}
 
 
   return (
     <div>
-      <FormControl className={classes.formControl}>
-        <InputLabel id="demo-simple-select-label">Home Team</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={team}
-          onChange={handleChange}
-        >
-            {teamData.map((team) => <MenuItem value={team.id} key={team.id}>{team.team}</MenuItem>)}
-        </Select>
-      </FormControl>
-      <FormControl className={classes.formControl}>
-        <InputLabel id="demo-simple-select-label">Pitchers</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={player}
-          onChange={handlePlayerChange}
-        >
-            {playerData.map((player) => <MenuItem value={player.id} key={player.id}>{player.first_name} {player.last_name}</MenuItem>)}
-        </Select>
-      </FormControl>
+      <div style={{display: 'flex', justifyContent: 'space-between', margin: '10px 50px'}}>
+        <div>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Home Team</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={homeTeam}
+              onChange={handleHomeTeamChange}
+            >
+                {homeTeamData.map((team) => <MenuItem name={team.team} value={team.id} key={team.id}>{team.team}</MenuItem>)}
+            </Select>
+          </FormControl>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Pitchers</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={player}
+              onChange={handlePlayerChange}
+            >
+                {playerData.map((player) => <MenuItem value={player.id} key={player.id}>{player.first_name} {player.last_name}</MenuItem>)}
+            </Select>
+          </FormControl>
+        </div>
+        <div>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Away Team</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={awayTeam}
+              onChange={handleAwayTeamChange}
+            >
+                {homeTeamData.map((team) => <MenuItem value={team.id} key={team.id}>{team.team}</MenuItem>)}
+            </Select>
+          </FormControl>
+        </div>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center'}}>
+        <Button variant="contained" color="primary" onClick={handleOnClick}>
+          Submit
+        </Button>
+      </div>
       {playerProfile !== '' && playerProfile !== undefined ? 
       <PDFDocument pitcherData={pitcherData} playerName={playerName} playerProfile={playerProfile} /> :
       <div/>}
