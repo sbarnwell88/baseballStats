@@ -27,19 +27,25 @@ const styles = StyleSheet.create({
 
 export default function PDFDocument(props) {
 
-    const pitchCount = props.pitcherData[0] !== undefined ? props.pitcherData[0].totals.statistics.pitch_metrics.overall.count : 0
-    const hitterHandVsPitcher = props.playerProfile !== undefined && props.playerProfile[0].totals !== undefined ? props.playerProfile[0].totals.splits.pitching.overall[0].hitter_hand : []
-    const homeAwayStats = props.playerProfile !== undefined && props.playerProfile[0].totals !== undefined ? props.playerProfile[0].totals.splits.pitching.overall[0].home_away : []
-    
+    const { pitcherData, playerProfile, playerName, awayTeamName, awayTeam } = props;
+    console.log(awayTeamName)
+    const pitchCount = pitcherData[0] !== undefined ? pitcherData[0].totals.statistics.pitch_metrics.overall.count : 0
+    const hitterHandVsPitcher = playerProfile !== undefined && playerProfile[0].totals !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].hitter_hand : []
+    const homeAwayStats = playerProfile !== undefined && playerProfile[0].totals !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].home_away : []
+    const opponentStats = playerProfile !== undefined && playerProfile[0].totals !== undefined && awayTeam !== undefined ? 
+        playerProfile[0].totals.splits.pitching.overall[0].opponent.filter((team) => team.id === awayTeam) : []
+    const lastStarts = playerProfile !== undefined && playerProfile[0].totals !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].last_starts : []
+
     return (
-        props.pitcherData[0] !== undefined && props.playerProfile !== undefined ? (
+        pitcherData[0] !== undefined && playerProfile !== undefined ? (
         <PDFViewer style={{marginTop: '20px', width: '100%', height: '100vh'}}>
             <Document>
                 <Page size="A4" style={styles.page}>
                     <View style={styles.section}>
-                        <Text style={{fontSize: 24, textAlign: 'center'}}>{props.playerName[2]} {props.playerName[0]}</Text>
+                        <Text style={{fontSize: 24, textAlign: 'center'}}>{playerName[2]} {playerName[0]}</Text>
+                    {/* <View style={{display: 'flex', flexDirection: 'column'}}> */}
                         <Text>Pitch Types</Text>
-                    {props.pitcherData[0].totals.statistics.pitch_metrics.pitch_types.map((pitch, i) => {
+                    {pitcherData[0].totals.statistics.pitch_metrics.pitch_types.map((pitch, i) => {
                             return (
                                 <View style={{display: 'flex', flexDirection: 'row'}} key={i}>
                                     <Text style={styles.text}>{pitch.type}:</Text> 
@@ -68,6 +74,34 @@ export default function PDFDocument(props) {
                                 </View>
                             )
                         }): []}
+                    {/* </View> */}
+                        {awayTeam !== undefined ? <Text>vs. {awayTeamName}</Text> : ''}
+                        {opponentStats !== undefined && opponentStats.length > 0 && awayTeam !== undefined ? opponentStats.map((item, index) => {
+                            return (
+                                <View style={{display: 'flex', flexDirection: 'column', flexWrap: 'wrap'}} key={index}>
+                                    <Text style={styles.text}>avg: {item.oba}</Text>
+                                    <Text style={styles.text}>HR: {item.hr}</Text>
+                                    <Text style={styles.text}>k total: {item.ktotal}</Text>
+                                    <Text style={styles.text}>walks: {item.bb}</Text>
+                                    <Text style={styles.text}>team win: {item.team_win}</Text>
+                                    <Text style={styles.text}>team loss: {item.team_loss}</Text>
+                                    <Text style={styles.text}>pitcher's wins: {item.win}</Text>
+                                    <Text style={styles.text}>pitcher's losses: {item.loss}</Text>
+                                    <Text style={styles.text}>starts: {item.start}</Text>
+                                    <Text style={styles.text}>earned runs: {item.er}</Text>
+                                </View>
+                            )
+                        }) : []}
+                        <Text>Last Starts</Text>
+                        {lastStarts !== undefined && lastStarts.length > 0 ? lastStarts.map((item, index) => {
+                            return (
+                                <View style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}} key={index}>
+                                    <Text style={styles.text}>starts: {item.value}</Text>
+                                    <Text style={styles.text}>era: {item.era}</Text>
+                                    <Text style={styles.text}>avg: {item.oba}</Text>
+                                </View>
+                            )
+                        }) : []}
                     </View>
                 </Page>
             </Document>

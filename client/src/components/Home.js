@@ -27,8 +27,10 @@ export default function Home() {
   const [playerData, setPlayerData] = useState([])
   const [player, setPlayer] = useState([])
   const [pitcherData, setPitcherData] = useState([])
-  const [playerName, setPlayerName] = useState('')
   const [playerProfile, setPlayerProfile] = useState();
+  const [playerName, setplayerName] = useState('')
+  const [homeTeamName, sethomeTeamName] = useState('')
+  const [awayTeamName, setawayTeamName] = useState()
 
   const delay = ms => new Promise(res => setTimeout(res, ms));
 
@@ -65,19 +67,22 @@ export default function Home() {
     getHomeTeam()
   }, []);
 
-const handleHomeTeamChange = (event) => {
-    setHomeTeam(event.target.value);
+const handleHomeTeamChange = (event, value) => {
+    setHomeTeam(event.target.value)
+    sethomeTeamName(value.props.children)
     getPlayers(event.target.value)
-    // getAwayTeam(event.target.value)
+    getAwayTeam(event.target.value)
 };
 
-const handleAwayTeamChange = (event) => {
+const handleAwayTeamChange = (event, value) => {
   setawayTeam(event.target.value);
+  setawayTeamName(value.props.children)
 };
   
 const handlePlayerChange = (event, value) => {
-    setPlayer(event.target.value);
-    setPlayerName(value.props.children)
+  console.log(value.props.children)
+  setPlayer(event.target.value);
+  setplayerName(value.props.children)
 };
 
 const handleOnClick = () => {
@@ -121,7 +126,7 @@ const handleOnClick = () => {
               value={awayTeam}
               onChange={handleAwayTeamChange}
             >
-                {homeTeamData.map((team) => <MenuItem value={team.id} key={team.id}>{team.team}</MenuItem>)}
+                {awayTeamData.map((team) => <MenuItem value={team.id} key={team.id}>{team.team}</MenuItem>)}
             </Select>
           </FormControl>
         </div>
@@ -132,7 +137,13 @@ const handleOnClick = () => {
         </Button>
       </div>
       {playerProfile !== '' && playerProfile !== undefined ? 
-      <PDFDocument pitcherData={pitcherData} playerName={playerName} playerProfile={playerProfile} /> :
+      <PDFDocument 
+      pitcherData={pitcherData} 
+      playerProfile={playerProfile} 
+      playerName={playerName} 
+      awayTeam={awayTeam}
+      awayTeamName={awayTeamName}
+      /> :
       <div/>}
     </div>
   );
