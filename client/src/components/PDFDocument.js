@@ -29,6 +29,7 @@ export default function PDFDocument(props) {
 
     const { pitcherData, playerProfile, playerName, awayTeamName, awayTeam } = props;
     console.log(awayTeamName)
+    console.log(awayTeam)
     const pitchCount = pitcherData[0] !== undefined ? pitcherData[0].totals.statistics.pitch_metrics.overall.count : 0
     const hitterHandVsPitcher = playerProfile !== undefined && playerProfile[0].totals !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].hitter_hand : []
     const homeAwayStats = playerProfile !== undefined && playerProfile[0].totals !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].home_away : []
@@ -43,65 +44,77 @@ export default function PDFDocument(props) {
                 <Page size="A4" style={styles.page}>
                     <View style={styles.section}>
                         <Text style={{fontSize: 24, textAlign: 'center'}}>{playerName[2]} {playerName[0]}</Text>
-                    {/* <View style={{display: 'flex', flexDirection: 'column'}}> */}
-                        <Text>Pitch Types</Text>
-                    {pitcherData[0].totals.statistics.pitch_metrics.pitch_types.map((pitch, i) => {
-                            return (
-                                <View style={{display: 'flex', flexDirection: 'row'}} key={i}>
-                                    <Text style={styles.text}>{pitch.type}:</Text> 
-                                    <Text style={styles.text}>{pitch.avg_speed.toFixed(1)}</Text> 
-                                    <Text style={styles.text}>{(pitch.count/pitchCount*100).toFixed(2)}%</Text>
-                                </View>)
-                    })}
-                        <Text>R/L handed batters</Text>
-                        {hitterHandVsPitcher !== undefined && hitterHandVsPitcher.length > 0 ? hitterHandVsPitcher.map((hand, i) => {
-                            return (
-                                <View style={{display: 'flex', flexDirection: 'row'}} key={i}>
-                                    <Text style={styles.text}>{hand.value}-hand batter:</Text>
-                                    <Text style={styles.text}>{hand.oba}</Text>
-                                    <Text style={styles.text}>{hand.hr} hr</Text>
-                                </View>
-                            )
-                        }) : []}
-                        <Text>Home/Away</Text>
-                        {homeAwayStats !== undefined && homeAwayStats.length > 0 ? homeAwayStats.map((item, i) => {
-                            return (
-                                <View style={{display: 'flex', flexDirection: 'row'}} key={i}>
-                                    <Text style={styles.text}>{item.value}:</Text>
-                                    <Text style={styles.text}>{item.win} wins</Text>
-                                    <Text style={styles.text}>{item.loss} losses</Text>
-                                    <Text style={styles.text}>{item.era} era</Text>
-                                </View>
-                            )
-                        }): []}
-                    {/* </View> */}
-                        {awayTeam !== undefined ? <Text>vs. {awayTeamName}</Text> : ''}
-                        {opponentStats !== undefined && opponentStats.length > 0 && awayTeam !== undefined ? opponentStats.map((item, index) => {
-                            return (
-                                <View style={{display: 'flex', flexDirection: 'column', flexWrap: 'wrap'}} key={index}>
-                                    <Text style={styles.text}>avg: {item.oba}</Text>
-                                    <Text style={styles.text}>HR: {item.hr}</Text>
-                                    <Text style={styles.text}>k total: {item.ktotal}</Text>
-                                    <Text style={styles.text}>walks: {item.bb}</Text>
-                                    <Text style={styles.text}>team win: {item.team_win}</Text>
-                                    <Text style={styles.text}>team loss: {item.team_loss}</Text>
-                                    <Text style={styles.text}>pitcher's wins: {item.win}</Text>
-                                    <Text style={styles.text}>pitcher's losses: {item.loss}</Text>
-                                    <Text style={styles.text}>starts: {item.start}</Text>
-                                    <Text style={styles.text}>earned runs: {item.er}</Text>
-                                </View>
-                            )
-                        }) : []}
-                        <Text>Last Starts</Text>
-                        {lastStarts !== undefined && lastStarts.length > 0 ? lastStarts.map((item, index) => {
-                            return (
-                                <View style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}} key={index}>
-                                    <Text style={styles.text}>starts: {item.value}</Text>
-                                    <Text style={styles.text}>era: {item.era}</Text>
-                                    <Text style={styles.text}>avg: {item.oba}</Text>
-                                </View>
-                            )
-                        }) : []}
+                    <View style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
+                        <View style={{padding: '0 15px', marginTop: '10px'}}>
+                            <Text>Pitch Types</Text>
+                            {pitcherData[0].totals.statistics.pitch_metrics.pitch_types.map((pitch, i) => {
+                                return (
+                                    <View style={{display: 'flex', flexDirection: 'row'}} key={i}>
+                                        <Text style={styles.text}>{pitch.type}:</Text> 
+                                        <Text style={styles.text}>{pitch.avg_speed.toFixed(1)}</Text> 
+                                        <Text style={styles.text}>{(pitch.count/pitchCount*100).toFixed(2)}%</Text>
+                                    </View>)
+                            })}
+                        </View>
+                        <View style={{padding: '0 15px', marginTop: '10px'}}>
+                            <View>
+                            <Text>Home/Away</Text>
+                            {homeAwayStats !== undefined && homeAwayStats.length > 0 ? homeAwayStats.map((item, i) => {
+                                return (
+                                    <View style={{display: 'flex', flexDirection: 'row'}} key={i}>
+                                        <Text style={styles.text}>{item.value}:</Text>
+                                        <Text style={styles.text}>{item.win} wins</Text>
+                                        <Text style={styles.text}>{item.loss} losses</Text>
+                                        <Text style={styles.text}>{item.era} era</Text>
+                                    </View>
+                                )
+                            }): []}
+                            </View>
+                            <View style={{marginTop: '15px'}}>
+                            <Text>R/L handed batters</Text>
+                            {hitterHandVsPitcher !== undefined && hitterHandVsPitcher.length > 0 ? hitterHandVsPitcher.map((hand, i) => {
+                                return (
+                                    <View style={{display: 'flex', flexDirection: 'row'}} key={i}>
+                                        <Text style={styles.text}>{hand.value}-hand batter:</Text>
+                                        <Text style={styles.text}>{hand.oba}</Text>
+                                        <Text style={styles.text}>{hand.hr} hr</Text>
+                                    </View>
+                                )
+                            }) : []}
+                            </View>
+                        </View>
+                        <View style={{padding: '0 15px', marginTop: '15px'}}>
+                            {awayTeam !== undefined ? <Text>{awayTeamName}</Text> : ''}
+                            {opponentStats !== undefined && opponentStats.length > 0 && awayTeam !== undefined ? opponentStats.map((item, index) => {
+                                return (
+                                    <View style={{display: 'flex', flexDirection: 'column', flexWrap: 'wrap'}} key={index}>
+                                        <Text style={styles.text}>avg: {item.oba}</Text>
+                                        <Text style={styles.text}>HR: {item.hr}</Text>
+                                        <Text style={styles.text}>k total: {item.ktotal}</Text>
+                                        <Text style={styles.text}>walks: {item.bb}</Text>
+                                        <Text style={styles.text}>team win: {item.team_win}</Text>
+                                        <Text style={styles.text}>team loss: {item.team_loss}</Text>
+                                        <Text style={styles.text}>pitcher's wins: {item.win}</Text>
+                                        <Text style={styles.text}>pitcher's losses: {item.loss}</Text>
+                                        <Text style={styles.text}>starts: {item.start}</Text>
+                                        <Text style={styles.text}>earned runs: {item.er}</Text>
+                                    </View>
+                                )
+                            }) : []}
+                        </View>
+                        <View style={{padding: '0 30px', marginTop: '15px'}}>
+                            <Text>Last Starts</Text>
+                            {lastStarts !== undefined && lastStarts.length > 0 ? lastStarts.map((item, index) => {
+                                return (
+                                    <View style={{display: 'flex', flexDirection: 'column'}} key={index}>
+                                        <Text style={styles.text}>starts: {item.value}</Text>
+                                        <Text style={styles.text}>era: {item.era}</Text>
+                                        <Text style={styles.text}>avg: {item.oba}</Text>
+                                    </View>
+                                )
+                            }) : []}
+                        </View>
+                        </View>
                     </View>
                 </Page>
             </Document>
