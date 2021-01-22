@@ -29,6 +29,8 @@ export default function PDFDocument(props) {
 
     const { pitcherData, playerProfile, awayTeam } = props;
     console.log(playerProfile)
+    console.log(pitcherData)
+    console.log(pitcherData[1])
     const pitchCount = pitcherData[0].totals !== undefined ? pitcherData[0].totals.statistics.pitch_metrics.overall.count : 0
     const hitterHandVsPitcher = playerProfile !== undefined && playerProfile[0] !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].hitter_hand : []
     const homeAwayStats = playerProfile !== undefined && playerProfile[0] !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].home_away : []
@@ -37,8 +39,9 @@ export default function PDFDocument(props) {
     const opponentName = playerProfile !== undefined && playerProfile[0] !== undefined && awayTeam !== undefined ? 
         playerProfile[0].totals.splits.pitching.overall[0].opponent.filter((team) => team.id === awayTeam) : []
     const lastStarts = playerProfile !== undefined && playerProfile[0] !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].last_starts : []
-    const overallStats = playerProfile[0].totals.statistics.pitching.overall;
-    console.log(playerProfile[0].totals.statistics.pitching.overall.ip_2)
+    const overallStats = playerProfile !== undefined && playerProfile[0] !== undefined ? playerProfile[0].totals.statistics.pitching.overall : [];
+    const months = playerProfile !== undefined && playerProfile[0] !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].month : []
+    console.log(months)
 
     return (
         pitcherData[0] !== undefined && playerProfile !== undefined ? (
@@ -46,7 +49,7 @@ export default function PDFDocument(props) {
             <Document>
                 <Page size="A4" style={styles.page}>
                     <View style={styles.section}>
-                        <Text style={{fontSize: 24, textAlign: 'center'}}>{pitcherData[1]}</Text>
+                        <Text style={{fontSize: 24, textAlign: 'center'}}>{pitcherData[1] !== undefined ? pitcherData[1] : pitcherData[0] !== undefined && typeof pitcherData[0] === 'string' ? pitcherData[0] : ''}</Text>
                     <View style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
                         <View style={{padding: '0 15px', marginTop: '10px'}}>
                             <Text>Pitch Types</Text>
@@ -61,7 +64,6 @@ export default function PDFDocument(props) {
                             }): []}
                         </View>
                         <View style={{padding: '0 15px', marginTop: '10px'}}>
-                            <View>
                             <Text>Home/Away</Text>
                             {homeAwayStats !== undefined && homeAwayStats.length > 0 ? homeAwayStats.map((item, i) => {
                                 return (
@@ -75,7 +77,6 @@ export default function PDFDocument(props) {
                                     </View>
                                 )
                             }): []}
-                            </View>
                             <View style={{marginTop: '15px'}}>
                                 <Text>R/L handed batters</Text>
                                 {hitterHandVsPitcher !== undefined && hitterHandVsPitcher.length > 0 ? hitterHandVsPitcher.map((hand, i) => {
@@ -95,19 +96,38 @@ export default function PDFDocument(props) {
                                     <Text style={styles.text}>Avg: {playerProfile !== undefined && playerProfile[0] !== undefined ? overallStats.oba : []}</Text>
                                 </View>
                             </View>
+                            <View style={{marginTop: '15px'}}>
+                                <Text>September Stats</Text>
+                                {playerProfile !== undefined && playerProfile[0] !== undefined ? months.map((month) => {
+                                    if (month.value === '9') {
+                                        return (
+                                            <View style={{display: 'flex', flexDirection: 'row'}}>
+                                                <Text style={styles.text}>Wins: {month.win}</Text>
+                                                <Text style={styles.text}>Losses: {month.loss}</Text>
+                                                <Text style={styles.text}>ERA: {month.era}</Text>
+                                                <Text style={styles.text}>Avg: {month.oba}</Text>
+                                            </View>)
+                                    }
+                                }) : []}
+                            </View>
+                            <View style={{marginTop: '15px'}}>
+                                <Text>Last Starts</Text>
+                                {lastStarts !== undefined && lastStarts.length > 0 ? lastStarts.map((item, index) => {
+                                    return (
+                                        <View style={{display: 'flex', flexDirection: 'row'}} key={index}>
+                                            <Text style={styles.text}>starts: {item.value}</Text>
+                                            <Text style={styles.text}>era: {item.era}</Text>
+                                            <Text style={styles.text}>avg: {item.oba}</Text>
+                                        </View>
+                                    )
+                                }) : []}
+                            </View>
                         </View>
-                        <View style={{padding: '0 30px', marginTop: '15px'}}>
-                            <Text>Last Starts</Text>
-                            {lastStarts !== undefined && lastStarts.length > 0 ? lastStarts.map((item, index) => {
-                                return (
-                                    <View style={{display: 'flex', flexDirection: 'column'}} key={index}>
-                                        <Text style={styles.text}>starts: {item.value}</Text>
-                                        <Text style={styles.text}>era: {item.era}</Text>
-                                        <Text style={styles.text}>avg: {item.oba}</Text>
-                                    </View>
-                                )
-                            }) : []}
-                        </View>
+                    </View>
+                </View>
+            </Page>
+                <Page size="A4" style={styles.page}>
+                    <View style={styles.section}>
                         <View style={{padding: '0 15px', marginTop: '15px'}}>
                             {opponentName.length > 0 ? <Text>{opponentName[0].name}</Text> : []}
                             {opponentStats !== undefined && opponentStats.length > 0 && awayTeam !== undefined ? opponentStats.map((item, index) => {
@@ -126,7 +146,6 @@ export default function PDFDocument(props) {
                                     </View>
                                 )
                             }) : []}
-                        </View>
                         </View>
                     </View>
                 </Page>

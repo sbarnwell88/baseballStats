@@ -14,22 +14,22 @@ router.route('/')
         let leagueSchedule;
 
         // USING JSON FILES
-        try {
-            leagueSchedule = await fs.readJson(path.join(__dirname, '../data/leagueSchedule.json'));
-        } catch (err) {
-            console.error(err)
-        }
-        
-        return res.send(leagueSchedule)
-
-        // MAKING REAL API CALLS
         // try {
-        //     leagueSchedule = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/games/2019/REG/schedule.json?api_key=' + apiKey)
+        //     leagueSchedule = await fs.readJson(path.join(__dirname, '../data/leagueSchedule.json'));
         // } catch (err) {
         //     console.error(err)
         // }
         
-        // return res.json(leagueSchedule.data)
+        // return res.send(leagueSchedule)
+
+        // MAKING REAL API CALLS
+        try {
+            leagueSchedule = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/games/2019/REG/schedule.json?api_key=' + apiKey)
+        } catch (err) {
+            console.error(err)
+        }
+        
+        return res.json(leagueSchedule.data)
     })
 
 router.route('/:id')
@@ -38,20 +38,20 @@ router.route('/:id')
         let teamProfile;
 
         // USING JSON FILES
-        try {
-            teamProfile = await fs.readJson(path.join(__dirname, '../data/teams/' + req.params.id + '.json'));
-        } catch (err) {
-            console.error(err)
-        }
-        const players = teamProfile.players.filter((item) => item.position === 'P')
-
-        // API CALL 
         // try {
-        //     teamProfile = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/teams/' + req.params.id + '/profile.json?api_key=' + apiKey)
+        //     teamProfile = await fs.readJson(path.join(__dirname, '../data/teams/' + req.params.id + '.json'));
         // } catch (err) {
         //     console.error(err)
         // }
-        // const players = teamProfile.data.players.filter((item) => item.position === 'P')
+        // const players = teamProfile.players.filter((item) => item.position === 'P')
+
+        // API CALL 
+        try {
+            teamProfile = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/teams/' + req.params.id + '/profile.json?api_key=' + apiKey)
+        } catch (err) {
+            console.error(err)
+        }
+        const players = teamProfile.data.players.filter((item) => item.position === 'P')
 
         return res.json(players)
     })

@@ -12,24 +12,24 @@ router.route('/:id')
         let playerProfile;
 
         // USE JSON
-        try {
-            // seasonal pitch metrics
-            playerProfile = await fs.readJson(path.join(__dirname, '../data/players/' + req.params.id + '.json'));
-        } catch (err) {
-            console.error(err)
-        }
-        const player = playerProfile.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
-        player.push(playerProfile.player.full_name)
-        
-        // USE API 
         // try {
         //     // seasonal pitch metrics
-        //     playerProfile = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/players/' + req.params.id + '/pitch_metrics.json?api_key=' + apiKey)
+        //     playerProfile = await fs.readJson(path.join(__dirname, '../data/players/' + req.params.id + '.json'));
         // } catch (err) {
         //     console.error(err)
         // }
-        // const player = playerProfile.data.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
-        // player.push(playerProfile.data.player.full_name)
+        // const player = playerProfile.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
+        // player.push(playerProfile.player.full_name)
+        
+        // USE API 
+        try {
+            // seasonal pitch metrics
+            playerProfile = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/players/' + req.params.id + '/pitch_metrics.json?api_key=' + apiKey)
+        } catch (err) {
+            console.error(err)
+        }
+        const player = playerProfile.data.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
+        player.push(playerProfile.data.player.full_name)
 
         return res.json(player)
     })
@@ -38,22 +38,22 @@ router.route('/:id')
         let playerDetails;
 
         // USE JSON
-        try {
-            // player profile
-            playerDetails = await fs.readJson(path.join(__dirname, '../data/playerProfile/' + req.params.id + '.json'));
-        } catch (err) {
-            console.error(err)
-        }
-        const playerObject = playerDetails.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
-
-        // API CALL
         // try {
         //     // player profile
-        //     playerDetails = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/players/' + req.params.id + '/profile.json?api_key=' + apiKey)
+        //     playerDetails = await fs.readJson(path.join(__dirname, '../data/playerProfile/' + req.params.id + '.json'));
         // } catch (err) {
         //     console.error(err)
         // }
-        // const playerObject = playerDetails.data.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
+        // const playerObject = playerDetails.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
+
+        // API CALL
+        try {
+            // player profile
+            playerDetails = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/players/' + req.params.id + '/profile.json?api_key=' + apiKey)
+        } catch (err) {
+            console.error(err)
+        }
+        const playerObject = playerDetails.data.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
         
         return res.json(playerObject)
     })
