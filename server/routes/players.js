@@ -19,6 +19,7 @@ router.route('/:id')
             console.error(err)
         }
         const player = playerProfile.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
+        player.push(playerProfile.player.full_name)
         
         // USE API 
         // try {
@@ -28,6 +29,7 @@ router.route('/:id')
         //     console.error(err)
         // }
         // const player = playerProfile.data.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
+        // player.push(playerProfile.data.player.full_name)
 
         return res.json(player)
     })

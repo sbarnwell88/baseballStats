@@ -11,7 +11,7 @@ import PDFDocument from './PDFDocument';
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120,
+    minWidth: 140,
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -28,9 +28,8 @@ export default function Home() {
   const [player, setPlayer] = useState([])
   const [pitcherData, setPitcherData] = useState([])
   const [playerProfile, setPlayerProfile] = useState();
-  const [playerName, setplayerName] = useState('')
   const [homeTeamName, sethomeTeamName] = useState('')
-  const [awayTeamName, setawayTeamName] = useState()
+  const [leagueSchedule, setleagueSchedule] = useState([])
 
   const delay = ms => new Promise(res => setTimeout(res, ms));
 
@@ -41,20 +40,38 @@ export default function Home() {
     setPlayerProfile(pitcher.data)
   }
 
-  const getHomeTeam = async () => {
+  const getLeagueSchedule = async () => {
     const schedule = await axios.get('/teams');
-    setHomeTeamData(schedule.data);
+    setleagueSchedule(schedule.data)
+    firstTeam(schedule.data)
    };
 
-   const getAwayTeam = async (teamId) => {
-    const schedule = await axios.get(`/teams/awayTeam/${teamId}`);
-    console.log(schedule.data)
-    setAwayTeamData(schedule.data);
+  const firstTeam = (leagueSchedule) => {
+    let teams = [];
+    leagueSchedule.games.forEach((item) => teams.push({team: item.home.name, id: item.home.id}))    
+    const uniqueArray = teams.filter((item, index) => teams.findIndex(obj => obj.team === item.team) === index)
+    setHomeTeamData(uniqueArray.sort((a, b) => (a.team > b.team) ? 1 : -1))
+  }
+
+   const getAwayTeam = async (leagueSchedule, teamId) => {
+    let awayTeams = [];
+    let homeTeams = [];
+    leagueSchedule.games.forEach((item) => {
+      if (item.home.id === teamId || item.away.id === teamId) {
+          awayTeams.push({team: item.home.name, id: item.home.id})
+          homeTeams.push({team: item.away.name, id: item.away.id})
+      }
+  })
+
+    const opponentList = awayTeams.concat(homeTeams).filter((team) => team.id !== teamId)
+    const uniqueArray = opponentList.filter((item, index) => opponentList.findIndex(obj => obj.team === item.team) === index)
+    setAwayTeamData(uniqueArray.sort((a, b) => (a.team > b.team) ? 1 : -1));
    };
 
   const getPlayers = async (teamId) => {
       const players = await axios.get(`/teams/${teamId}`)
-      setPlayerData(players.data)
+      console.log(players.data)
+      setPlayerData(players.data.sort((a, b) => (a.last_name > b.last_name) ? 1 : -1))
   }
 
   const getPitcherStats = async (playerId) => {
@@ -64,25 +81,22 @@ export default function Home() {
 }
 
   useEffect(() => {
-    getHomeTeam()
+    getLeagueSchedule()
   }, []);
 
 const handleHomeTeamChange = (event, value) => {
     setHomeTeam(event.target.value)
     sethomeTeamName(value.props.children)
     getPlayers(event.target.value)
-    getAwayTeam(event.target.value)
+    getAwayTeam(leagueSchedule, event.target.value)
 };
 
 const handleAwayTeamChange = (event, value) => {
   setawayTeam(event.target.value);
-  setawayTeamName(value.props.children)
 };
   
 const handlePlayerChange = (event, value) => {
-  console.log(value.props.children)
   setPlayer(event.target.value);
-  setplayerName(value.props.children)
 };
 
 const handleOnClick = () => {
@@ -95,7 +109,7 @@ const handleOnClick = () => {
       <div style={{display: 'flex', justifyContent: 'space-between', margin: '10px 50px'}}>
         <div>
           <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Home Team</InputLabel>
+            <InputLabel id="demo-simple-select-label">Select Team</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -119,7 +133,7 @@ const handleOnClick = () => {
         </div>
         <div>
           <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Away Team</InputLabel>
+            <InputLabel id="demo-simple-select-label">Opposing Team</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -140,9 +154,7 @@ const handleOnClick = () => {
       <PDFDocument 
       pitcherData={pitcherData} 
       playerProfile={playerProfile} 
-      playerName={playerName} 
       awayTeam={awayTeam}
-      awayTeamName={awayTeamName}
       /> :
       <div/>}
     </div>
