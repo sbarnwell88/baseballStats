@@ -10,6 +10,7 @@ router.route('/:id')
     .get(async (req, res) => {
 
         let playerProfile;
+        let player;
 
         // USE JSON
         // try {
@@ -25,17 +26,19 @@ router.route('/:id')
         try {
             // seasonal pitch metrics
             playerProfile = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/players/' + req.params.id + '/pitch_metrics.json?api_key=' + apiKey)
+            player = playerProfile.data.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
+            player.push(playerProfile.data.player.full_name)
+
         } catch (err) {
             console.error(err)
         }
-        const player = playerProfile.data.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
-        player.push(playerProfile.data.player.full_name)
 
         return res.json(player)
     })
     router.route('/profile/:id')
     .get(async (req, res) => {
         let playerDetails;
+        let playerObject;
 
         // USE JSON
         // try {
@@ -50,10 +53,11 @@ router.route('/:id')
         try {
             // player profile
             playerDetails = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/players/' + req.params.id + '/profile.json?api_key=' + apiKey)
+            playerObject = playerDetails.data.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
+        
         } catch (err) {
             console.error(err)
         }
-        const playerObject = playerDetails.data.player.seasons.filter((item) => item.year === 2019 && item.type === 'REG')
         
         return res.json(playerObject)
     })

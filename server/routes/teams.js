@@ -19,7 +19,7 @@ router.route('/')
         // } catch (err) {
         //     console.error(err)
         // }
-        
+
         // return res.send(leagueSchedule)
 
         // MAKING REAL API CALLS
@@ -28,7 +28,7 @@ router.route('/')
         } catch (err) {
             console.error(err)
         }
-        
+
         return res.json(leagueSchedule.data)
     })
 
@@ -36,22 +36,23 @@ router.route('/:id')
     .get(async (req, res) => {
 
         let teamProfile;
+        let players;
 
         // USING JSON FILES
         // try {
         //     teamProfile = await fs.readJson(path.join(__dirname, '../data/teams/' + req.params.id + '.json'));
+        //     players = teamProfile.players.filter((item) => item.position === 'P')
         // } catch (err) {
         //     console.error(err)
         // }
-        // const players = teamProfile.players.filter((item) => item.position === 'P')
 
         // API CALL 
         try {
             teamProfile = await axios.get('http://api.sportradar.us/mlb/trial/v7/en/teams/' + req.params.id + '/profile.json?api_key=' + apiKey)
+            players = teamProfile.data.players.filter((item) => item.position === 'P')
         } catch (err) {
             console.error(err)
         }
-        const players = teamProfile.data.players.filter((item) => item.position === 'P')
 
         return res.json(players)
     })

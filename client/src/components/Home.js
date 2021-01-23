@@ -50,6 +50,7 @@ export default function Home() {
     let teams = [];
     leagueSchedule.games.forEach((item) => teams.push({team: item.home.name, id: item.home.id}))    
     const uniqueArray = teams.filter((item, index) => teams.findIndex(obj => obj.team === item.team) === index)
+    .filter((team) => team.team.toLowerCase() !== 'american league' && team.team.toLowerCase() !== 'national league')
     setHomeTeamData(uniqueArray.sort((a, b) => (a.team > b.team) ? 1 : -1))
   }
 
