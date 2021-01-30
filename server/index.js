@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const teamsRoute = require('./routes/teams')
 const playersRoute = require('./routes/players')
+const apiRouter = require('./api/proxy')
 // const playerProfile = require('./routes/playerProfile')
 require('dotenv').config()
 const app = express();
@@ -12,9 +13,10 @@ app.get('/test', (req, res) => {
 })
 
 // app.use('/profile', playerProfile);
-app.use('/players', playersRoute);
-app.use('/teams', teamsRoute);
+app.use('/api', apiRouter)
+// app.use('/players', playersRoute);
+// app.use('/teams', teamsRoute);
 //Set the port that you want the server to run on
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3030;
 app.listen(port);
 console.log('App is listening on port ' + port);

@@ -27,45 +27,68 @@ const styles = StyleSheet.create({
 
 export default function PDFDocument(props) {
 
-    const { pitcherData, playerProfile, awayTeam } = props;
-    console.log(playerProfile)
-    console.log(pitcherData)
-    console.log(pitcherData[1])
-    const pitchCount = pitcherData[0].totals !== undefined ? pitcherData[0].totals.statistics.pitch_metrics.overall.count : 0
-    const hitterHandVsPitcher = playerProfile !== undefined && playerProfile[0] !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].hitter_hand : []
-    const homeAwayStats = playerProfile !== undefined && playerProfile[0] !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].home_away : []
-    const opponentStats = playerProfile !== undefined && playerProfile[0] !== undefined && awayTeam !== undefined ? 
-        playerProfile[0].totals.splits.pitching.overall[0].opponent.filter((team) => team.id === awayTeam) : []
-    const opponentName = playerProfile !== undefined && playerProfile[0] !== undefined && awayTeam !== undefined ? 
-        playerProfile[0].totals.splits.pitching.overall[0].opponent.filter((team) => team.id === awayTeam) : []
-    const lastStarts = playerProfile !== undefined && playerProfile[0] !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].last_starts : []
-    const overallStats = playerProfile !== undefined && playerProfile[0] !== undefined ? playerProfile[0].totals.statistics.pitching.overall : [];
-    const months = playerProfile !== undefined && playerProfile[0] !== undefined ? playerProfile[0].totals.splits.pitching.overall[0].month : []
-    console.log(months)
+    const { pitcherData } = props;
+
+    let firstHalfWinSum = 0;
+    let firstHalfLossSum = 0;
+    let firstHalfIp2Sum = 0;
+    let firstHalfEraSum = 0;
+    let firstHalfObaSum = 0;
+    let firstHalfHitSum = 0;
+    let firstHalfBattersFacedSum = 0;
+    let secondHalfWinSum = 0;
+    let secondHalfLossSum = 0;
+    let secondHalfIp2Sum = 0;
+    let secondHalfEraSum = 0;
+    let secondHalfObaSum = 0;
+    let secondHalfHitSum = 0;
+    let secondHalfBattersFacedSum = 0;
+    pitcherData.months.forEach((month) => {
+        if (month.value === '4' || month.value === '5' || month.value === '6') {
+            console.log("here")
+            firstHalfWinSum = firstHalfWinSum + month.win;
+            firstHalfLossSum = firstHalfLossSum + month.loss
+            firstHalfIp2Sum = firstHalfIp2Sum + month.ip_2
+            firstHalfEraSum = firstHalfEraSum + month.era
+            firstHalfObaSum = firstHalfObaSum + month.oba
+            firstHalfHitSum = firstHalfHitSum + month.h
+            firstHalfBattersFacedSum = firstHalfBattersFacedSum + month.bf
+        } else if (month.value === '7' || month.value === '8' || month.value === '9') {
+            secondHalfWinSum = secondHalfWinSum + month.win
+            secondHalfLossSum = secondHalfLossSum + month.loss
+            secondHalfIp2Sum = secondHalfIp2Sum + month.ip_2
+            secondHalfEraSum = secondHalfEraSum + month.era
+            secondHalfObaSum = secondHalfObaSum + month.oba
+            secondHalfHitSum = secondHalfHitSum + month.h
+            secondHalfBattersFacedSum = secondHalfBattersFacedSum + month.bf
+        }
+    })
 
     return (
-        pitcherData[0] !== undefined && playerProfile !== undefined ? (
+        pitcherData !== null ? (
         <PDFViewer style={{marginTop: '20px', width: '100%', height: '100vh'}}>
             <Document>
                 <Page size="A4" style={styles.page}>
                     <View style={styles.section}>
-                        <Text style={{fontSize: 24, textAlign: 'center'}}>{pitcherData[1] !== undefined ? pitcherData[1] : pitcherData[0] !== undefined && typeof pitcherData[0] === 'string' ? pitcherData[0] : ''}</Text>
+                        <Text style={{fontSize: 24, textAlign: 'center'}}>{pitcherData.name}</Text>
                     <View style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
                         <View style={{padding: '0 15px', marginTop: '10px'}}>
                             <Text>Pitch Types</Text>
-                            {pitcherData[0].totals !== undefined ? pitcherData[0].totals.statistics.pitch_metrics.pitch_types.map((pitch, i) => {
+                            {pitcherData.pitchTypes !== null ? 
+                            pitcherData.pitchTypes.map((pitch, i) => {
                                 return (
                                     <View style={{display: 'flex', flexDirection: 'row'}} key={i}>
                                         <Text style={styles.text}>{pitch.type}:</Text> 
                                         <Text style={styles.text}>{pitch.avg_speed.toFixed(1)}</Text> 
-                                        <Text style={styles.text}>{(pitch.count/pitchCount*100).toFixed(2)}%</Text>
+                                        <Text style={styles.text}>{(pitch.count/pitcherData.pitchCount*100).toFixed(2)}%</Text>
                                         <Text style={styles.text}>{pitch.onbase.hr} hr</Text>
+                                        <Text style={styles.text}>{(pitch.onbase.h/(pitch.in_play.linedrive + pitch.in_play.groundball + pitch.in_play.popup + pitch.in_play.flyball)).toFixed(3)} avg</Text>
                                     </View>)
                             }): []}
                         </View>
                         <View style={{padding: '0 15px', marginTop: '10px'}}>
                             <Text>Home/Away</Text>
-                            {homeAwayStats !== undefined && homeAwayStats.length > 0 ? homeAwayStats.map((item, i) => {
+                            {pitcherData.homeAway !== null ? pitcherData.homeAway.map((item, i) => {
                                 return (
                                     <View style={{display: 'flex', flexDirection: 'row'}} key={i}>
                                         <Text style={styles.text}>{item.value}:</Text>
@@ -79,7 +102,7 @@ export default function PDFDocument(props) {
                             }): []}
                             <View style={{marginTop: '15px'}}>
                                 <Text>R/L handed batters</Text>
-                                {hitterHandVsPitcher !== undefined && hitterHandVsPitcher.length > 0 ? hitterHandVsPitcher.map((hand, i) => {
+                                {pitcherData.hitterHand !== null ? pitcherData.hitterHand.map((hand, i) => {
                                     return (
                                         <View style={{display: 'flex', flexDirection: 'row'}} key={i}>
                                             <Text style={styles.text}>{hand.value}-hand batter:</Text>
@@ -92,13 +115,13 @@ export default function PDFDocument(props) {
                             <View style={{marginTop: '15px'}}>
                                 <Text>Overall</Text>
                                 <View style={{display: 'flex', flexDirection: 'row'}}>
-                                    <Text style={styles.text}>Innings Pitched/Year: {playerProfile !== undefined && playerProfile[0] !== undefined ? overallStats.ip_2 : []}</Text>
-                                    <Text style={styles.text}>Avg: {playerProfile !== undefined && playerProfile[0] !== undefined ? overallStats.oba : []}</Text>
+                                    <Text style={styles.text}>Innings Pitched/Year: {pitcherData.overallStats !== null ? pitcherData.overallStats.ip_2 : []}</Text>
+                                    <Text style={styles.text}>Avg: {pitcherData.overallStats !== undefined ? pitcherData.overallStats.oba : []}</Text>
                                 </View>
                             </View>
                             <View style={{marginTop: '15px'}}>
                                 <Text>September Stats</Text>
-                                {playerProfile !== undefined && playerProfile[0] !== undefined ? months.map((month) => {
+                                {pitcherData.months !== null ? pitcherData.months.map((month) => {
                                     if (month.value === '9') {
                                         return (
                                             <View style={{display: 'flex', flexDirection: 'row'}}>
@@ -106,13 +129,36 @@ export default function PDFDocument(props) {
                                                 <Text style={styles.text}>Losses: {month.loss}</Text>
                                                 <Text style={styles.text}>ERA: {month.era}</Text>
                                                 <Text style={styles.text}>Avg: {month.oba}</Text>
+                                                <Text style={styles.text}>Innings pitched: {month.ip_2}</Text>
                                             </View>)
                                     }
                                 }) : []}
                             </View>
                             <View style={{marginTop: '15px'}}>
+                                <Text>First Half</Text>
+                                {pitcherData.months !== null ? 
+                                (<View style={{display: 'flex', flexDirection: 'row'}}>
+                                    <Text style={styles.text}>Wins: {firstHalfWinSum}</Text>
+                                    <Text style={styles.text}>Losses: {firstHalfLossSum}</Text>
+                                    <Text style={styles.text}>ERA: {(firstHalfEraSum/firstHalfIp2Sum).toFixed(3)}</Text>
+                                    {/* <Text style={styles.text}>Avg: {(firstHalfObaSum/firstHalfBattersFacedSum).toFixed(3)}</Text> */}
+                                    <Text style={styles.text}>Innings pitched: {firstHalfIp2Sum}</Text>
+                                </View>) : []}
+                            </View>
+                            <View style={{marginTop: '15px'}}>
+                                <Text>Second Half</Text>
+                                {pitcherData.months !== null ? 
+                                (<View style={{display: 'flex', flexDirection: 'row'}}>
+                                    <Text style={styles.text}>Wins: {secondHalfWinSum}</Text>
+                                    <Text style={styles.text}>Losses: {secondHalfLossSum}</Text>
+                                    <Text style={styles.text}>ERA: {(secondHalfEraSum/secondHalfIp2Sum).toFixed(3)}</Text>
+                                    {/* <Text style={styles.text}>Avg: {(secondHalfObaSum/secondHalfBattersFacedSum).toFixed(3)}</Text> */}
+                                    <Text style={styles.text}>Innings pitched: {secondHalfIp2Sum}</Text>
+                                </View>) : []}
+                            </View>
+                            <View style={{marginTop: '15px'}}>
                                 <Text>Last Starts</Text>
-                                {lastStarts !== undefined && lastStarts.length > 0 ? lastStarts.map((item, index) => {
+                                {pitcherData.lastStarts !== null ? pitcherData.lastStarts.map((item, index) => {
                                     return (
                                         <View style={{display: 'flex', flexDirection: 'row'}} key={index}>
                                             <Text style={styles.text}>starts: {item.value}</Text>
@@ -126,11 +172,12 @@ export default function PDFDocument(props) {
                     </View>
                 </View>
             </Page>
+            {pitcherData.opponentStats !== null ? (
                 <Page size="A4" style={styles.page}>
                     <View style={styles.section}>
                         <View style={{padding: '0 15px', marginTop: '15px'}}>
-                            {opponentName.length > 0 ? <Text>{opponentName[0].name}</Text> : []}
-                            {opponentStats !== undefined && opponentStats.length > 0 && awayTeam !== undefined ? opponentStats.map((item, index) => {
+                            {pitcherData.opponentName !== null ? <Text>{pitcherData.opponentName}</Text> : []}
+                            {pitcherData.opponentStats !== null ? pitcherData.opponentStats.map((item, index) => {
                                 return (
                                     <View style={{display: 'flex', flexDirection: 'column', flexWrap: 'wrap'}} key={index}>
                                         <Text style={styles.text}>avg: {item.oba}</Text>
@@ -149,6 +196,7 @@ export default function PDFDocument(props) {
                         </View>
                     </View>
                 </Page>
+                ) : []}
             </Document>
         </PDFViewer>
         ) : <div/>

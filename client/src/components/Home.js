@@ -7,6 +7,7 @@ import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 import axios from 'axios'
 import PDFDocument from './PDFDocument';
+import HitterPDFDocument from './HitterPDFDocument'
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -23,25 +24,19 @@ export default function Home() {
   const [homeTeamData, setHomeTeamData] = useState([])
   const [homeTeam, setHomeTeam] = useState('')
   const [awayTeamData, setAwayTeamData] = useState([])
-  const [awayTeam, setawayTeam] = useState('')
+  const [awayTeam, setawayTeam] = useState(null)
   const [playerData, setPlayerData] = useState([])
   const [player, setPlayer] = useState([])
-  const [pitcherData, setPitcherData] = useState([])
-  const [playerProfile, setPlayerProfile] = useState();
-  const [homeTeamName, sethomeTeamName] = useState('')
+  const [pitcherData, setPitcherData] = useState(null)
+  const [hitterData, setHitterData] = useState(null)
   const [leagueSchedule, setleagueSchedule] = useState([])
-
-  const delay = ms => new Promise(res => setTimeout(res, ms));
-
-  const getPitcherProfile = async (playerId) => {
-    await delay(5000);
-    const pitcher = await axios.get(`/players/profile/${playerId}`)
-    console.log("Waited 5s");
-    setPlayerProfile(pitcher.data)
-  }
+  const [year, setyear] = useState('')
+  const years = [2018, 2019, 2020, 2021]
+  const [position, setposition] = useState('');
+  const [mlbSeason, setMlbSeason] = useState('');
 
   const getLeagueSchedule = async () => {
-    const schedule = await axios.get('/teams');
+    const schedule = await axios.get(`api/teams`);
     setleagueSchedule(schedule.data)
     firstTeam(schedule.data)
    };
@@ -69,41 +64,60 @@ export default function Home() {
     setAwayTeamData(uniqueArray.sort((a, b) => (a.team > b.team) ? 1 : -1));
    };
 
-  const getPlayers = async (teamId) => {
-      const players = await axios.get(`/teams/${teamId}`)
+  const getPlayers = async (teamId, positionId) => {
+      const players = await axios.get(`api/players?teamId=${teamId}&position=${positionId}`)
       console.log(players.data)
       setPlayerData(players.data.sort((a, b) => (a.last_name > b.last_name) ? 1 : -1))
   }
 
   const getPitcherStats = async (playerId) => {
-    const pitcher = await axios.get(`/players/${playerId}`)
-    setPitcherData(pitcher.data)
-    getPitcherProfile(playerId)
+    if (position === 'P') {
+      const pitcher = await axios.get(`api/pitcherProfile?playerId=${playerId}&year=${year}&mlbSeason=${mlbSeason}&opponentId=${awayTeam}`)
+      console.log(pitcher.data)
+      setPitcherData(pitcher.data)
+    } else {
+      const hitterData = await axios.get(`api/hitterProfile?playerId=${playerId}&year=${year}&mlbSeason=${mlbSeason}&opponentId=${awayTeam}`)
+      console.log(hitterData.data)
+      setHitterData(hitterData.data)
+    }
+    
 }
 
   useEffect(() => {
     getLeagueSchedule()
   }, []);
 
-const handleHomeTeamChange = (event, value) => {
+const handleHomeTeamChange = (event) => {
     setHomeTeam(event.target.value)
-    sethomeTeamName(value.props.children)
-    getPlayers(event.target.value)
     getAwayTeam(leagueSchedule, event.target.value)
 };
 
-const handleAwayTeamChange = (event, value) => {
+const handleAwayTeamChange = (event) => {
   setawayTeam(event.target.value);
 };
   
-const handlePlayerChange = (event, value) => {
+const handlePlayerChange = (event) => {
   setPlayer(event.target.value);
 };
 
 const handleOnClick = () => {
+  setPitcherData(null)
+  setHitterData(null)
   getPitcherStats(player)
 }
 
+const handleYearOnChange = (event) => {
+  setyear(event.target.value)
+}
+
+const handlePositionOnChange = (event) => {
+  setposition(event.target.value)
+  getPlayers(homeTeam, event.target.value)
+}
+
+const handleMlbSeasonOnChange = (event) => {
+  setMlbSeason(event.target.value)
+}
 
   return (
     <div>
@@ -121,7 +135,42 @@ const handleOnClick = () => {
             </Select>
           </FormControl>
           <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Pitchers</InputLabel>
+            <InputLabel id="demo-simple-select-label">Position</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={position}
+              onChange={handlePositionOnChange}
+            >
+              <MenuItem value={'P'}>Pitcher</MenuItem>
+              <MenuItem value={'H'}>Hitter</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">MLB Season</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={mlbSeason}
+              onChange={handleMlbSeasonOnChange}
+            >
+              <MenuItem value={'REG'}>Regular</MenuItem>
+              <MenuItem value={'PST'}>POST</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Year</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={year}
+              onChange={handleYearOnChange}
+            >
+                {years.map((year) => <MenuItem value={year}>{year}</MenuItem>)}
+            </Select>
+          </FormControl>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Player</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -151,13 +200,12 @@ const handleOnClick = () => {
           Submit
         </Button>
       </div>
-      {playerProfile !== '' && playerProfile !== undefined ? 
+      {pitcherData !== null && pitcherData !== undefined ? 
       <PDFDocument 
       pitcherData={pitcherData} 
-      playerProfile={playerProfile} 
-      awayTeam={awayTeam}
       /> :
       <div/>}
+      {hitterData !== null ? <HitterPDFDocument hitterData={hitterData} /> : <div/>}
     </div>
   );
 }
