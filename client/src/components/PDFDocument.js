@@ -14,6 +14,7 @@ const styles = StyleSheet.create({
       },
     page: {
       fontFamily: 'Oswald', 
+    //   paddingBottom: 35
     },
     section: {
       margin: 10,
@@ -36,6 +37,7 @@ export default function PDFDocument(props) {
     let firstHalfObaSum = 0;
     let firstHalfHitSum = 0;
     let firstHalfBattersFacedSum = 0;
+    let firstHalfHR = 0;
     let secondHalfWinSum = 0;
     let secondHalfLossSum = 0;
     let secondHalfIp2Sum = 0;
@@ -43,24 +45,27 @@ export default function PDFDocument(props) {
     let secondHalfObaSum = 0;
     let secondHalfHitSum = 0;
     let secondHalfBattersFacedSum = 0;
+    let secondHalfHR = 0;
     pitcherData.months.forEach((month) => {
         if (month.value === '4' || month.value === '5' || month.value === '6') {
             console.log("here")
             firstHalfWinSum = firstHalfWinSum + month.win;
             firstHalfLossSum = firstHalfLossSum + month.loss
             firstHalfIp2Sum = firstHalfIp2Sum + month.ip_2
-            firstHalfEraSum = firstHalfEraSum + month.era
-            firstHalfObaSum = firstHalfObaSum + month.oba
+            firstHalfEraSum = firstHalfEraSum + (month.era * month.ip_2)
+            firstHalfObaSum = firstHalfObaSum + (month.oba * month.ip_2)
             firstHalfHitSum = firstHalfHitSum + month.h
             firstHalfBattersFacedSum = firstHalfBattersFacedSum + month.bf
+            firstHalfHR = firstHalfHR + firstHalfHR
         } else if (month.value === '7' || month.value === '8' || month.value === '9') {
             secondHalfWinSum = secondHalfWinSum + month.win
             secondHalfLossSum = secondHalfLossSum + month.loss
             secondHalfIp2Sum = secondHalfIp2Sum + month.ip_2
-            secondHalfEraSum = secondHalfEraSum + month.era
-            secondHalfObaSum = secondHalfObaSum + month.oba
+            secondHalfEraSum = secondHalfEraSum + (month.era * month.ip_2)
+            secondHalfObaSum = secondHalfObaSum + (month.oba * month.ip_2)
             secondHalfHitSum = secondHalfHitSum + month.h
             secondHalfBattersFacedSum = secondHalfBattersFacedSum + month.bf
+            secondHalfHR = secondHalfHR + secondHalfHR
         }
     })
 
@@ -80,9 +85,9 @@ export default function PDFDocument(props) {
                                     <View style={{display: 'flex', flexDirection: 'row'}} key={i}>
                                         <Text style={styles.text}>{pitch.type}:</Text> 
                                         <Text style={styles.text}>{pitch.avg_speed.toFixed(1)}</Text> 
-                                        <Text style={styles.text}>{(pitch.count/pitcherData.pitchCount*100).toFixed(2)}%</Text>
+                                        <Text style={styles.text}>{parseFloat((pitch.count/pitcherData.pitchCount*100).toFixed(2)) || 0}%</Text>
                                         <Text style={styles.text}>{pitch.onbase.hr} hr</Text>
-                                        <Text style={styles.text}>{(pitch.onbase.h/(pitch.in_play.linedrive + pitch.in_play.groundball + pitch.in_play.popup + pitch.in_play.flyball)).toFixed(3)} avg</Text>
+                                        <Text style={styles.text}>{parseFloat((pitch.onbase.h/(pitch.in_play.linedrive + pitch.in_play.groundball + pitch.in_play.popup + pitch.in_play.flyball)).toFixed(3)) || 0} avg</Text>
                                     </View>)
                             }): []}
                         </View>
@@ -95,7 +100,7 @@ export default function PDFDocument(props) {
                                         <Text style={styles.text}>{item.win} wins</Text>
                                         <Text style={styles.text}>{item.loss} losses</Text>
                                         <Text style={styles.text}>{item.era} era</Text>
-                                        <Text style={styles.text}>{item.oba} avg</Text>
+                                        <Text style={styles.text}>{parseFloat(item.oba).toFixed(3)} avg</Text>
                                         <Text style={styles.text}>{item.hr} hr</Text>
                                     </View>
                                 )
@@ -116,7 +121,9 @@ export default function PDFDocument(props) {
                                 <Text>Overall</Text>
                                 <View style={{display: 'flex', flexDirection: 'row'}}>
                                     <Text style={styles.text}>Innings Pitched/Year: {pitcherData.overallStats !== null ? pitcherData.overallStats.ip_2 : []}</Text>
-                                    <Text style={styles.text}>Avg: {pitcherData.overallStats !== undefined ? pitcherData.overallStats.oba : []}</Text>
+                                    <Text style={styles.text}>Avg: {pitcherData.overallStats !== null ? pitcherData.overallStats.oba : []}</Text>
+                                    <Text style={styles.text}>ERA: {pitcherData.overallStats !== null ? pitcherData.overallStats.era : []}</Text>
+                                    <Text style={styles.text}>HR: {pitcherData.overallStats.onbase !== null ? pitcherData.overallStats.onbase.hr : []}</Text>
                                 </View>
                             </View>
                             <View style={{marginTop: '15px'}}>
@@ -140,9 +147,9 @@ export default function PDFDocument(props) {
                                 (<View style={{display: 'flex', flexDirection: 'row'}}>
                                     <Text style={styles.text}>Wins: {firstHalfWinSum}</Text>
                                     <Text style={styles.text}>Losses: {firstHalfLossSum}</Text>
-                                    <Text style={styles.text}>ERA: {(firstHalfEraSum/firstHalfIp2Sum).toFixed(3)}</Text>
-                                    {/* <Text style={styles.text}>Avg: {(firstHalfObaSum/firstHalfBattersFacedSum).toFixed(3)}</Text> */}
-                                    <Text style={styles.text}>Innings pitched: {firstHalfIp2Sum}</Text>
+                                    <Text style={styles.text}>ERA: {parseFloat((firstHalfEraSum/firstHalfIp2Sum).toFixed(3)) || 0}</Text>
+                                    <Text style={styles.text}>Avg: {parseFloat((firstHalfObaSum/firstHalfIp2Sum).toFixed(3)) || 0}</Text>
+                                    <Text style={styles.text}>Innings pitched: {parseFloat((firstHalfIp2Sum).toFixed(1)) || 0}</Text>
                                 </View>) : []}
                             </View>
                             <View style={{marginTop: '15px'}}>
@@ -151,9 +158,9 @@ export default function PDFDocument(props) {
                                 (<View style={{display: 'flex', flexDirection: 'row'}}>
                                     <Text style={styles.text}>Wins: {secondHalfWinSum}</Text>
                                     <Text style={styles.text}>Losses: {secondHalfLossSum}</Text>
-                                    <Text style={styles.text}>ERA: {(secondHalfEraSum/secondHalfIp2Sum).toFixed(3)}</Text>
-                                    {/* <Text style={styles.text}>Avg: {(secondHalfObaSum/secondHalfBattersFacedSum).toFixed(3)}</Text> */}
-                                    <Text style={styles.text}>Innings pitched: {secondHalfIp2Sum}</Text>
+                                    <Text style={styles.text}>ERA: {parseFloat((secondHalfEraSum/secondHalfIp2Sum).toFixed(3)) || 0}</Text>
+                                    <Text style={styles.text}>Avg: {parseFloat((secondHalfObaSum/secondHalfIp2Sum).toFixed(3)) || 0}</Text>
+                                    <Text style={styles.text}>Innings pitched: {parseFloat((secondHalfIp2Sum).toFixed(1)) || 0}</Text>
                                 </View>) : []}
                             </View>
                             <View style={{marginTop: '15px'}}>
@@ -164,6 +171,9 @@ export default function PDFDocument(props) {
                                             <Text style={styles.text}>starts: {item.value}</Text>
                                             <Text style={styles.text}>era: {item.era}</Text>
                                             <Text style={styles.text}>avg: {item.oba}</Text>
+                                            <Text style={styles.text}>HR: {item.hr}</Text>
+                                            <Text style={styles.text}>wins: {item.win}</Text>
+                                            <Text style={styles.text}>losses: {item.loss}</Text>
                                         </View>
                                     )
                                 }) : []}

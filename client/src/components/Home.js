@@ -8,6 +8,8 @@ import Button from '@material-ui/core/Button';
 import axios from 'axios'
 import PDFDocument from './PDFDocument';
 import HitterPDFDocument from './HitterPDFDocument'
+import PitcherData from './PitcherData';
+import HitterData from './HitterData';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -66,18 +68,15 @@ export default function Home() {
 
   const getPlayers = async (teamId, positionId) => {
       const players = await axios.get(`api/players?teamId=${teamId}&position=${positionId}`)
-      console.log(players.data)
       setPlayerData(players.data.sort((a, b) => (a.last_name > b.last_name) ? 1 : -1))
   }
 
   const getPitcherStats = async (playerId) => {
     if (position === 'P') {
       const pitcher = await axios.get(`api/pitcherProfile?playerId=${playerId}&year=${year}&mlbSeason=${mlbSeason}&opponentId=${awayTeam}`)
-      console.log(pitcher.data)
       setPitcherData(pitcher.data)
     } else {
       const hitterData = await axios.get(`api/hitterProfile?playerId=${playerId}&year=${year}&mlbSeason=${mlbSeason}&opponentId=${awayTeam}`)
-      console.log(hitterData.data)
       setHitterData(hitterData.data)
     }
     
@@ -201,11 +200,18 @@ const handleMlbSeasonOnChange = (event) => {
         </Button>
       </div>
       {pitcherData !== null && pitcherData !== undefined ? 
-      <PDFDocument 
-      pitcherData={pitcherData} 
-      /> :
+      // <PDFDocument 
+      // pitcherData={pitcherData} 
+      // /> 
+      <PitcherData pitcherData={pitcherData} />
+      :
       <div/>}
-      {hitterData !== null ? <HitterPDFDocument hitterData={hitterData} /> : <div/>}
+      {hitterData !== null ? 
+      <div>
+        <a style={{ margin: '0 10px'}} href={hitterData.linkForBrooksBaseball} target="_blank">Zone Profile</a>
+        {/* <HitterPDFDocument hitterData={hitterData} /> */}
+        <HitterData hitterData={hitterData} />
+      </div> : <div/>}
     </div>
   );
 }
