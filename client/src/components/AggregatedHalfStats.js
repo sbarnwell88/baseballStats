@@ -1,12 +1,17 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import { removeLeadingZero } from './Util';
 
 const useStyles = makeStyles((theme) => ({
     stats: {
       // padding: theme.spacing(1),
       textAlign: 'left'
-    }
+    },
+    subTitle: {
+        textAlign: 'left',
+        fontWeight: 'bold',
+      }
   }));
 
 function AggregatedHalfStats(props) {
@@ -17,7 +22,7 @@ function AggregatedHalfStats(props) {
     return (
         <Grid container spacing={2} justify="flex-start">
             <Grid item xs={1}>
-                <div className={classes.stats}>{title}</div>
+                <div className={classes.subTitle}>{title}</div>
             </Grid>
             <Grid item xs={1}>
                 <div className={classes.stats}>W: {aggregatedMonthlyData !== null ? winSum : []}</div>
@@ -29,10 +34,10 @@ function AggregatedHalfStats(props) {
                 <div className={classes.stats}>IP: {aggregatedMonthlyData !== null ? parseFloat((ip2Sum).toFixed(1)) || 0 : []}</div>
             </Grid>
             <Grid item xs={2}>
-                <div className={classes.stats}>AVG: {aggregatedMonthlyData !== null ? parseFloat((obaSum/ip2Sum).toFixed(3)) || 0 : []}</div>
+                <div className={classes.stats}>AVG: {aggregatedMonthlyData !== null ? removeLeadingZero(parseFloat((obaSum/ip2Sum).toFixed(3)) || 0) : []}</div>
             </Grid>
             <Grid item xs={2}>
-                <div className={classes.stats}>ERA: {aggregatedMonthlyData !== null ? parseFloat((eraSum/ip2Sum).toFixed(3)) || 0 : []}</div>
+                <div className={classes.stats}>ERA: {aggregatedMonthlyData !== null ? removeLeadingZero(parseFloat((eraSum/ip2Sum).toFixed(3)) || 0) : []}</div>
             </Grid>
             <Grid item xs={2}>
                 <div className={classes.stats}>HR: {aggregatedMonthlyData !== null ? hrSum : []}</div>

@@ -203,12 +203,16 @@ const handleMlbSeasonOnChange = (event) => {
       // <PDFDocument 
       // pitcherData={pitcherData} 
       // /> 
-      <PitcherData pitcherData={pitcherData} />
+      <div>
+        <a style={{ margin: '0 10px'}} href={"https://quest.inside-edge.com/Account/Login?ReturnUrl=%2f"} target="_blank">Quest Inside Edge</a>
+        <PitcherData pitcherData={pitcherData} />
+      </div>
       :
       <div/>}
       {hitterData !== null ? 
       <div>
         <a style={{ margin: '0 10px'}} href={hitterData.linkForBrooksBaseball} target="_blank">Zone Profile</a>
+        <a style={{ margin: '0 10px'}} href={"https://quest.inside-edge.com/Account/Login?ReturnUrl=%2f"} target="_blank">Quest Inside Edge</a>
         {/* <HitterPDFDocument hitterData={hitterData} /> */}
         <HitterData hitterData={hitterData} />
       </div> : <div/>}

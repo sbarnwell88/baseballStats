@@ -4,20 +4,28 @@ import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import HandVenueHitterStats from './HandVenueHitterStats'
 import AggregatedHalfStatsHitter from './AggregatedHalfStatsHitter'
+import { removeLeadingZero } from './Util';
 
 const useStyles = makeStyles((theme) => ({
     root: {
       flexGrow: 1,
-      margin: '30px',
+      margin: '20px',
     },
     paper: {
       // padding: theme.spacing(1),
-      textAlign: 'center',
-      color: theme.palette.text.secondary,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: '20px'
+    // color: theme.palette.text.secondary,
     },
     stats: {
     //   padding: theme.spacing(1),
       textAlign: 'left'
+    },
+    title: {
+        textAlign: 'left',
+        fontWeight: 'bold',
+        textDecoration: 'underline'
     }
 }));
 
@@ -25,6 +33,7 @@ function HitterData(props) {
 
     const classes = useStyles();
     const { hitterData } = props;
+
     console.log(hitterData)
 
     let firstHalfHitsSum = 0;
@@ -34,6 +43,7 @@ function HitterData(props) {
     let firstHalfAvg = 0;
     let firstHalfRbi = 0
     let firstHalfTriples = 0;
+    let firstHalfObp = 0;
     let secondHalfHitsSum = 0;
     let secondHalfHRSum = 0;
     let secondHalfABSum = 0;
@@ -41,6 +51,7 @@ function HitterData(props) {
     let secondHalfAvg = 0;
     let secondHalfRbi = 0;
     let secondHalfTriple = 0;
+    let secondHalfObp = 0;
     hitterData.months.forEach((month) => {
         if (month.value === '4' || month.value === '5' || month.value === '6') {
             firstHalfHitsSum = firstHalfHitsSum + month.h;
@@ -50,6 +61,7 @@ function HitterData(props) {
             firstHalfAvg = firstHalfAvg + (month.avg * month.ab)
             firstHalfRbi = firstHalfRbi + month.rbi
             firstHalfTriples = firstHalfTriples + month.t
+            firstHalfObp = firstHalfObp + (month.obp * month.ab)
         } else if (month.value === '7' || month.value === '8' || month.value === '9') {
             secondHalfHitsSum = secondHalfHitsSum + month.h
             secondHalfHRSum = secondHalfHRSum + month.hr
@@ -58,6 +70,7 @@ function HitterData(props) {
             secondHalfAvg = secondHalfAvg + (month.avg * month.ab)
             secondHalfRbi = secondHalfRbi + month.rbi
             secondHalfTriple = secondHalfTriple + month.t
+            secondHalfObp = secondHalfObp + (month.obp * month.ab)
         }
     })
 
@@ -73,7 +86,7 @@ function HitterData(props) {
                 {hitterData.pitcher_hand !== null ? hitterData.pitcher_hand.map((hitter, i) => {
                     return (
                         <HandVenueHitterStats 
-                        title={hitter.value + "HP:"}
+                        title={hitter.value + "HP"}
                         avg={hitter.avg}
                         hits={hitter.h}
                         doubles={hitter.d}
@@ -108,7 +121,7 @@ function HitterData(props) {
                     rbi={firstHalfRbi}
                     hr={firstHalfHRSum}
                     ab={firstHalfABSum}
-                    obp={''}
+                    obp={removeLeadingZero((firstHalfObp/firstHalfABSum).toFixed(3))}
                 />
                 <AggregatedHalfStatsHitter 
                     title='2H' 
@@ -120,13 +133,13 @@ function HitterData(props) {
                     rbi={secondHalfRbi}
                     hr={secondHalfHRSum}
                     ab={secondHalfABSum}
-                    obp={''}
+                    obp={removeLeadingZero((secondHalfObp/secondHalfABSum).toFixed(3))}
                 />
                 {hitterData.months !== null ? hitterData.months.map((month, i) => {
                     if (month.value === '9') {
                         return (
                             <AggregatedHalfStatsHitter 
-                                title='September' 
+                                title='Sept' 
                                 aggregatedMonthlyData={hitterData.months} 
                                 avg={month.avg} 
                                 hits={month.h}
@@ -143,7 +156,7 @@ function HitterData(props) {
                 <br/>
                 <Grid container spacing={1} justify="flex-start">
                     <Grid item xs={12}>
-                        <div className={classes.stats}>Overall</div>
+                        <div className={classes.title}>Overall</div>
                     </Grid>
                     <Grid item xs={1}>
                         <div className={classes.stats}>AB: {hitterData.atBats !== null ? hitterData.atBats : []}</div>
@@ -164,16 +177,16 @@ function HitterData(props) {
                         <div className={classes.stats}>XB H: {hitterData.extraBaseHit !== null ? hitterData.extraBaseHit : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>AVG: {hitterData.avg !== null ? hitterData.avg : []}</div>
+                        <div className={classes.stats}>AVG: {hitterData.avg !== null ? removeLeadingZero(hitterData.avg.toFixed(3)) : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>OBP: {hitterData.onBasePercentage !== null ? hitterData.onBasePercentage.toFixed(3) : []}</div>
+                        <div className={classes.stats}>OBP: {hitterData.onBasePercentage !== null ? removeLeadingZero(hitterData.onBasePercentage.toFixed(3)) : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>SLG: {hitterData.sluggingPercentage !== null ? hitterData.sluggingPercentage.toFixed(3) : []}</div>
+                        <div className={classes.stats}>SLG: {hitterData.sluggingPercentage !== null ? removeLeadingZero(hitterData.sluggingPercentage.toFixed(3)) : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>I-PWR: {hitterData.isolatedPower !== null ? hitterData.isolatedPower : []}</div>
+                        <div className={classes.stats}>I-PWR: {hitterData.isolatedPower !== null ? removeLeadingZero(hitterData.isolatedPower.toFixed(3)) : []}</div>
                     </Grid>
                 </Grid>
                 <br/>
@@ -190,7 +203,7 @@ function HitterData(props) {
                 </Grid>
                 <Grid container spacing={1} justify="flex-start">
                     <Grid item xs={2}>
-                        <div className={classes.stats}>RISP: {hitterData.risp !== null ? hitterData.risp.toFixed(3) : []}</div>
+                        <div className={classes.stats}>RISP: {hitterData.risp !== null ? removeLeadingZero(hitterData.risp.toFixed(3)) : []}</div>
                     </Grid>
                     <Grid item xs={2}>
                         <div className={classes.stats}>H w/RISP: {hitterData.hitsWithRisp !== null ? hitterData.hitsWithRisp : []}</div>
@@ -259,7 +272,7 @@ function HitterData(props) {
                         <div className={classes.stats}>BB: {hitterData.walks !== null ? hitterData.walks : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>BB per AB: {hitterData.walksPerPlateAppearance !== null ? hitterData.walksPerPlateAppearance.toFixed(3) : []}</div>
+                        <div className={classes.stats}>BB per AB: {hitterData.walksPerPlateAppearance !== null ? removeLeadingZero(hitterData.walksPerPlateAppearance.toFixed(3)) : []}</div>
                     </Grid>
                 </Grid>
             </div>
