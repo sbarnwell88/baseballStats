@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import AggregatedHalfStats from './AggregatedHalfStats'
+import PitcherOpponentData from './PitcherOpponentData'
 import { removeLeadingZero } from './Util';
 
 const useStyles = makeStyles((theme) => ({
@@ -55,7 +56,6 @@ function PitcherData(props) {
     let secondHalfHR = 0;
     pitcherData.months.forEach((month) => {
         if (month.value === '4' || month.value === '5' || month.value === '6') {
-            console.log("here")
             firstHalfWinSum = firstHalfWinSum + month.win;
             firstHalfLossSum = firstHalfLossSum + month.loss
             firstHalfIp2Sum = firstHalfIp2Sum + month.ip_2
@@ -97,16 +97,16 @@ function PitcherData(props) {
                                 <div className={classes.subTitle}>{pitch.type}:</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>Avg Vel: {pitch.avg_speed.toFixed(1)}</div>
+                                <div className={classes.stats}>Avg Vel: {removeLeadingZero((pitch.avg_speed || 0.0).toFixed(1))}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>Prob: {parseFloat((pitch.count/pitcherData.pitchCount*100).toFixed(2)) || 0}%</div>
+                                <div className={classes.stats}>Prob: {removeLeadingZero(((pitch.count/pitcherData.pitchCount*100) || 0.0).toFixed(2))}%</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>HR: {pitch.onbase.hr}</div>
+                                <div className={classes.stats}>HR: {pitch.onbase.hr || 0}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>AVG: {removeLeadingZero(parseFloat((pitch.onbase.h/(pitch.in_play.linedrive + pitch.in_play.groundball + pitch.in_play.popup + pitch.in_play.flyball)).toFixed(3)) || 0)}</div>
+                                <div className={classes.stats}>AVG: {removeLeadingZero((parseFloat(pitch.onbase.h/(pitch.in_play.linedrive + pitch.in_play.groundball + pitch.in_play.popup + pitch.in_play.flyball)) || 0.0).toFixed(3))}</div>
                             </Grid>
                         </Grid>
                     )
@@ -119,19 +119,19 @@ function PitcherData(props) {
                                 <div className={classes.subTitle}>{item.value}:</div>
                             </Grid>
                             <Grid item xs={1}>
-                                <div className={classes.stats}>W: {item.win}</div>
+                                <div className={classes.stats}>W: {item.win || 0}</div>
                             </Grid>
                             <Grid item xs={1}>
-                                <div className={classes.stats}>L: {item.loss}</div>
+                                <div className={classes.stats}>L: {item.loss || 0}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>ERA: {item.era.toFixed(3)}</div>
+                                <div className={classes.stats}>ERA: {removeLeadingZero((item.era || 0.0).toFixed(3))}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>AVG: {removeLeadingZero(parseFloat(item.oba).toFixed(3))}</div>
+                                <div className={classes.stats}>AVG: {removeLeadingZero((item.oba || 0.0).toFixed(3))}</div>
                             </Grid>
                             <Grid item xs={1}>
-                                <div className={classes.stats}>HR: {item.hr}</div>
+                                <div className={classes.stats}>HR: {item.hr || 0}</div>
                             </Grid>
                         </Grid>
                     )
@@ -144,10 +144,10 @@ function PitcherData(props) {
                                 <div className={classes.subTitle}>{hand.value}HB:</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>AVG: {removeLeadingZero(hand.oba.toFixed(3))}</div>
+                                <div className={classes.stats}>AVG: {removeLeadingZero((hand.oba || 0.0).toFixed(3))}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>HR: {hand.hr}</div>
+                                <div className={classes.stats}>HR: {hand.hr || 0}</div>
                             </Grid>
                         </Grid>
                         )
@@ -158,22 +158,22 @@ function PitcherData(props) {
                         <div className={classes.subTitle}>Overall</div>
                     </Grid>
                     <Grid item xs={1}>
-                        <div className={classes.stats}>W: {pitcherData.overallStats.games !== null ? pitcherData.overallStats.games.win : []}</div>
+                        <div className={classes.stats}>W: {pitcherData.overallStats.games !== null ? pitcherData.overallStats.games.win || 0 : []}</div>
                     </Grid>
                     <Grid item xs={1}>
-                        <div className={classes.stats}>L: {pitcherData.overallStats.games !== null ? pitcherData.overallStats.games.loss : []}</div>
+                        <div className={classes.stats}>L: {pitcherData.overallStats.games !== null ? pitcherData.overallStats.games.loss || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>IP: {pitcherData.overallStats !== null ? pitcherData.overallStats.ip_2 : []}</div>
+                        <div className={classes.stats}>IP: {pitcherData.overallStats !== null ? removeLeadingZero((pitcherData.overallStats.ip_2 || 0.0).toFixed(1)) : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>AVG: {pitcherData.overallStats !== null ? removeLeadingZero(pitcherData.overallStats.oba.toFixed(3)) : []}</div>
+                        <div className={classes.stats}>AVG: {pitcherData.overallStats !== null ? removeLeadingZero((pitcherData.overallStats.oba || 0.0).toFixed(3)) : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>ERA: {pitcherData.overallStats !== null ? pitcherData.overallStats.era.toFixed(3) : []}</div>
+                        <div className={classes.stats}>ERA: {pitcherData.overallStats !== null ? removeLeadingZero((Number(pitcherData.overallStats.era) || 0.0).toFixed(3)) : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>HR: {pitcherData.overallStats.onbase !== null ? pitcherData.overallStats.onbase.hr : []}</div>
+                        <div className={classes.stats}>HR: {pitcherData.overallStats.onbase !== null ? pitcherData.overallStats.onbase.hr || 0 : []}</div>
                     </Grid>
                 </Grid>
                 <AggregatedHalfStats 
@@ -203,22 +203,22 @@ function PitcherData(props) {
                                 <div className={classes.subTitle}>Sept:</div>
                             </Grid>
                             <Grid item xs={1}>
-                                <div className={classes.stats}>W: {month.win}</div>
+                                <div className={classes.stats}>W: {month.win || 0}</div>
                             </Grid>
                             <Grid item xs={1}>
-                                <div className={classes.stats}>L: {month.loss}</div>
+                                <div className={classes.stats}>L: {month.loss || 0}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>IP: {month.ip_2}</div>
+                                <div className={classes.stats}>IP: {removeLeadingZero((month.ip_2 || 0.0).toFixed(1))}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>AVG: {removeLeadingZero(month.oba.toFixed(3))}</div>
+                                <div className={classes.stats}>AVG: {removeLeadingZero((month.oba || 0.0).toFixed(3))}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>ERA: {removeLeadingZero(month.era.toFixed(3))}</div>
+                                <div className={classes.stats}>ERA: {removeLeadingZero((month.era || 0.0).toFixed(3))}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>HR: {month.hr}</div>
+                                <div className={classes.stats}>HR: {month.hr || 0}</div>
                             </Grid>
                         </Grid>
                     : <div/>)
@@ -230,27 +230,31 @@ function PitcherData(props) {
                                 <div className={classes.subTitle}>L3:</div>
                             </Grid>
                             <Grid item xs={1}>
-                                <div className={classes.stats}>W: {item.win}</div>
+                                <div className={classes.stats}>W: {item.win || 0}</div>
                             </Grid>
                             <Grid item xs={1}>
-                                <div className={classes.stats}>L: {item.loss}</div>
+                                <div className={classes.stats}>L: {item.loss || 0}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>IP: {item.ip_2}</div>
+                                <div className={classes.stats}>IP: {removeLeadingZero((item.ip_2 || 0.0).toFixed(1))}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>AVG: {removeLeadingZero(item.oba.toFixed(3))}</div>
+                                <div className={classes.stats}>AVG: {removeLeadingZero((item.oba || 0.0).toFixed(3))}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>ERA: {removeLeadingZero(item.era.toFixed(3))}</div>
+                                <div className={classes.stats}>ERA: {removeLeadingZero((item.era || 0.0).toFixed(3))}</div>
                             </Grid>
                             <Grid item xs={2}>
-                                <div className={classes.stats}>HR: {item.hr}</div>
+                                <div className={classes.stats}>HR: {item.hr || 0}</div>
                             </Grid>
                         </Grid>
                     )
                 }): []}
             </div>
+            {pitcherData.opponentStats !== null && pitcherData.opponentStats.length > 0 ?
+            <PitcherOpponentData opponentData={pitcherData.opponentStats[0]} /> :
+            <div/>
+            }
         </div>
     )
 }

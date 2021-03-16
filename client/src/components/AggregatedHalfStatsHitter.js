@@ -5,7 +5,6 @@ import { removeLeadingZero } from './Util';
 
 const useStyles = makeStyles((theme) => ({
     stats: {
-      // padding: theme.spacing(1),
       textAlign: 'left'
     },
     title: {
@@ -18,8 +17,8 @@ function AggregatedHalfStatsHitter(props) {
 
     const classes = useStyles();
     const { title, aggregatedMonthlyData, avg, hits, doubles, triples, rbi, hr, obp, ab } = props;
-    const stats = removeLeadingZero((parseFloat((avg/ab).toFixed(3)) || 0)) + ' AVG / ' + hits + 
-    ' H / ' + doubles + '2B / ' + triples + ' 3B / ' + rbi + ' RBI / ' + hr + ' HR / ' + 'OBP: ' + obp
+    const stats = avg + ' AVG / ' + (hits || 0) + 
+    ' H / ' + (doubles || 0) + ' 2B / ' + (triples || 0) + ' 3B / ' + (rbi || 0) + ' RBI / ' + (hr || 0) + ' HR / ' + 'OBP: ' + obp
 
     return (
         <Grid container spacing={1} justify="flex-start">

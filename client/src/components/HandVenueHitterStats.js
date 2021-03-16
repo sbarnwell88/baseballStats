@@ -18,8 +18,8 @@ function HandVenueHitterStats(props) {
     const classes = useStyles();
     const { title, avg, hits, doubles, triples, rbi, hr } = props;
     
-    const stats = removeLeadingZero(avg.toFixed(3)) + ' AVG / ' + hits + ' H / ' + doubles + ' 2B / ' + 
-        triples + ' 3B / ' + rbi + ' RBI / ' + hr + ' HR'
+    const stats = (removeLeadingZero((avg || 0.0).toFixed(3))) + ' AVG / ' + (hits || 0) + ' H / ' + (doubles || 0) + ' 2B / ' + 
+        (triples || 0) + ' 3B / ' + (rbi || 0) + ' RBI / ' + (hr || 0) + ' HR'
 
     return (
         <Grid container spacing={1} justify="flex-start">

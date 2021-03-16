@@ -5,6 +5,7 @@ import Divider from '@material-ui/core/Divider';
 import HandVenueHitterStats from './HandVenueHitterStats'
 import AggregatedHalfStatsHitter from './AggregatedHalfStatsHitter'
 import { removeLeadingZero } from './Util';
+import HitterOpponentData from './HitterOpponentData';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -33,8 +34,6 @@ function HitterData(props) {
 
     const classes = useStyles();
     const { hitterData } = props;
-
-    console.log(hitterData)
 
     let firstHalfHitsSum = 0;
     let firstHalfHRSum = 0;
@@ -114,26 +113,26 @@ function HitterData(props) {
                 <AggregatedHalfStatsHitter 
                     title='1H' 
                     aggregatedMonthlyData={hitterData.months} 
-                    avg={firstHalfAvg} 
+                    avg={removeLeadingZero((parseFloat(firstHalfAvg/firstHalfABSum) || 0.0).toFixed(3))} 
                     hits={firstHalfHitsSum}
                     doubles={firstHalfDoublesSum}
                     triples={firstHalfTriples}
                     rbi={firstHalfRbi}
                     hr={firstHalfHRSum}
                     ab={firstHalfABSum}
-                    obp={removeLeadingZero((firstHalfObp/firstHalfABSum).toFixed(3))}
+                    obp={removeLeadingZero(((firstHalfObp/firstHalfABSum) || 0.0).toFixed(3))}
                 />
                 <AggregatedHalfStatsHitter 
                     title='2H' 
                     aggregatedMonthlyData={hitterData.months} 
-                    avg={secondHalfAvg} 
+                    avg={removeLeadingZero((parseFloat(secondHalfAvg/secondHalfABSum) || 0.0).toFixed(3))} 
                     hits={secondHalfHitsSum}
                     doubles={secondHalfDoublesSum}
                     triples={secondHalfTriple}
                     rbi={secondHalfRbi}
                     hr={secondHalfHRSum}
                     ab={secondHalfABSum}
-                    obp={removeLeadingZero((secondHalfObp/secondHalfABSum).toFixed(3))}
+                    obp={removeLeadingZero(((secondHalfObp/secondHalfABSum) || 0.0).toFixed(3))}
                 />
                 {hitterData.months !== null ? hitterData.months.map((month, i) => {
                     if (month.value === '9') {
@@ -141,14 +140,14 @@ function HitterData(props) {
                             <AggregatedHalfStatsHitter 
                                 title='Sept' 
                                 aggregatedMonthlyData={hitterData.months} 
-                                avg={month.avg} 
+                                avg={removeLeadingZero((parseFloat(month.avg) || 0.0).toFixed(3))} 
                                 hits={month.h}
                                 doubles={month.d}
                                 triples={month.t}
                                 rbi={month.rbi}
                                 hr={month.hr}
                                 ab={month.ab}
-                                obp={month.obp}
+                                obp={removeLeadingZero((month.obp || 0.0).toFixed(3))}
                             />
                         )
                     }
@@ -159,123 +158,127 @@ function HitterData(props) {
                         <div className={classes.title}>Overall</div>
                     </Grid>
                     <Grid item xs={1}>
-                        <div className={classes.stats}>AB: {hitterData.atBats !== null ? hitterData.atBats : []}</div>
+                        <div className={classes.stats}>AB: {hitterData.atBats !== null ? hitterData.atBats || 0 : []}</div>
                     </Grid>
                     <Grid item xs={1}>
-                        <div className={classes.stats}>H: {hitterData.hits !== null ? hitterData.hits : []}</div>
+                        <div className={classes.stats}>H: {hitterData.hits !== null ? hitterData.hits || 0 : []}</div>
                     </Grid>
                     <Grid item xs={1}>
-                        <div className={classes.stats}>2B: {hitterData.doubles !== null ? hitterData.doubles : []}</div>
+                        <div className={classes.stats}>2B: {hitterData.doubles !== null ? hitterData.doubles || 0 : []}</div>
                     </Grid>
                     <Grid item xs={1}>
-                        <div className={classes.stats}>3B: {hitterData.triples !== null ? hitterData.triples : []}</div>
+                        <div className={classes.stats}>3B: {hitterData.triples !== null ? hitterData.triples || 0 : []}</div>
                     </Grid>
                     <Grid item xs={1}>
-                        <div className={classes.stats}>HR: {hitterData.hr !== null ? hitterData.hr : []}</div>
+                        <div className={classes.stats}>HR: {hitterData.hr !== null ? hitterData.hr || 0 : []}</div>
                     </Grid>
                     <Grid item xs={1}>
-                        <div className={classes.stats}>XB H: {hitterData.extraBaseHit !== null ? hitterData.extraBaseHit : []}</div>
+                        <div className={classes.stats}>XB H: {hitterData.extraBaseHit !== null ? hitterData.extraBaseHit || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>AVG: {hitterData.avg !== null ? removeLeadingZero(hitterData.avg.toFixed(3)) : []}</div>
+                        <div className={classes.stats}>AVG: {hitterData.avg !== null ? removeLeadingZero((hitterData.avg || 0.0).toFixed(3)) : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>OBP: {hitterData.onBasePercentage !== null ? removeLeadingZero(hitterData.onBasePercentage.toFixed(3)) : []}</div>
+                        <div className={classes.stats}>OBP: {hitterData.onBasePercentage !== null ? removeLeadingZero((hitterData.onBasePercentage || 0.0).toFixed(3)) : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>SLG: {hitterData.sluggingPercentage !== null ? removeLeadingZero(hitterData.sluggingPercentage.toFixed(3)) : []}</div>
+                        <div className={classes.stats}>SLG: {hitterData.sluggingPercentage !== null ? removeLeadingZero((hitterData.sluggingPercentage || 0.0).toFixed(3)) : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>I-PWR: {hitterData.isolatedPower !== null ? removeLeadingZero(hitterData.isolatedPower.toFixed(3)) : []}</div>
+                        <div className={classes.stats}>I-PWR: {hitterData.isolatedPower !== null ? removeLeadingZero((hitterData.isolatedPower || 0.0).toFixed(3)) : []}</div>
                     </Grid>
                 </Grid>
                 <br/>
                 <Grid container spacing={1} justify="flex-start">
                     <Grid item xs={2}>
-                        <div className={classes.stats}>RBI: {hitterData.rbi !== null ? hitterData.rbi : []}</div>
+                        <div className={classes.stats}>RBI: {hitterData.rbi !== null ? hitterData.rbi || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>RBI w/2O: {hitterData.rbi2Out !== null ? hitterData.rbi2Out : []}</div>
+                        <div className={classes.stats}>RBI w/2O: {hitterData.rbi2Out !== null ? hitterData.rbi2Out || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>LOB: {hitterData.leftOnBase !== null ? hitterData.leftOnBase : []}</div>
+                        <div className={classes.stats}>LOB: {hitterData.leftOnBase !== null ? hitterData.leftOnBase || 0 : []}</div>
                     </Grid>
                 </Grid>
                 <Grid container spacing={1} justify="flex-start">
                     <Grid item xs={2}>
-                        <div className={classes.stats}>RISP: {hitterData.risp !== null ? removeLeadingZero(hitterData.risp.toFixed(3)) : []}</div>
+                        <div className={classes.stats}>RISP: {hitterData.risp !== null ? removeLeadingZero((hitterData.risp || 0.0).toFixed(3)) : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>H w/RISP: {hitterData.hitsWithRisp !== null ? hitterData.hitsWithRisp : []}</div>
+                        <div className={classes.stats}>H w/RISP: {hitterData.hitsWithRisp !== null ? hitterData.hitsWithRisp || 0 : []}</div>
                     </Grid>
                     <Grid item xs={3}>
-                        <div className={classes.stats}>LOB w/RISP and 2 outs: {hitterData.lobRisp2Out !== null ? hitterData.lobRisp2Out : []}</div>
+                        <div className={classes.stats}>LOB w/RISP and 2 outs: {hitterData.lobRisp2Out !== null ? hitterData.lobRisp2Out || 0 : []}</div>
                     </Grid>
                 </Grid>
                 <br/>
                 <Grid container spacing={1} justify="flex-start">
                     <Grid item xs={2}>
-                        <div className={classes.stats}>Fly Ball: {hitterData.flyBalls !== null ? hitterData.flyBalls : []}</div>
+                        <div className={classes.stats}>Fly Ball: {hitterData.flyBalls !== null ? hitterData.flyBalls || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>Fly Out: {hitterData.flyOuts !== null ? hitterData.flyOuts : []}</div>
+                        <div className={classes.stats}>Fly Out: {hitterData.flyOuts !== null ? hitterData.flyOuts || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>FODP: {hitterData.flyOutsIntoDoublePlays !== null ? hitterData.flyOutsIntoDoublePlays : []}</div>
+                        <div className={classes.stats}>FODP: {hitterData.flyOutsIntoDoublePlays !== null ? hitterData.flyOutsIntoDoublePlays || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>Pop Out: {hitterData.popOuts !== null ? hitterData.popOuts : []}</div>
+                        <div className={classes.stats}>Pop Out: {hitterData.popOuts !== null ? hitterData.popOuts || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>Pop Up: {hitterData.popUps !== null ? hitterData.popUps : []}</div>
-                    </Grid>
-                </Grid>
-                <Grid container spacing={1} justify="flex-start">
-                    <Grid item xs={2}>
-                        <div className={classes.stats}>Grd Ball: {hitterData.groundBall !== null ? hitterData.groundBall : []}</div>
-                    </Grid>
-                    <Grid item xs={2}>
-                        <div className={classes.stats}>Grd Outs: {hitterData.groundOuts !== null ? hitterData.groundOuts : []}</div>
-                    </Grid>
-                    <Grid item xs={2}>
-                        <div className={classes.stats}>GIDP: {hitterData.groundedIntoDoublePlay !== null ? hitterData.groundedIntoDoublePlay : []}</div>
+                        <div className={classes.stats}>Pop Up: {hitterData.popUps !== null ? hitterData.popUps || 0 : []}</div>
                     </Grid>
                 </Grid>
                 <Grid container spacing={1} justify="flex-start">
                     <Grid item xs={2}>
-                        <div className={classes.stats}>L-Drive: {hitterData.lineDrive !== null ? hitterData.lineDrive : []}</div>
+                        <div className={classes.stats}>Grd Ball: {hitterData.groundBall !== null ? hitterData.groundBall || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>L-Out: {hitterData.lineOut !== null ? hitterData.lineOut : []}</div>
+                        <div className={classes.stats}>Grd Outs: {hitterData.groundOuts !== null ? hitterData.groundOuts || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>LIDP: {hitterData.lineOutsIntoDoublePlay !== null ? hitterData.lineOutsIntoDoublePlay : []}</div>
+                        <div className={classes.stats}>GIDP: {hitterData.groundedIntoDoublePlay !== null ? hitterData.groundedIntoDoublePlay || 0 : []}</div>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={1} justify="flex-start">
+                    <Grid item xs={2}>
+                        <div className={classes.stats}>L-Drive: {hitterData.lineDrive !== null ? hitterData.lineDrive || 0 : []}</div>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <div className={classes.stats}>L-Out: {hitterData.lineOut !== null ? hitterData.lineOut || 0 : []}</div>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <div className={classes.stats}>LIDP: {hitterData.lineOutsIntoDoublePlay !== null ? hitterData.lineOutsIntoDoublePlay || 0 : []}</div>
                     </Grid>
                 </Grid>
                 <br/>
                 <Grid container spacing={1} justify="flex-start">
                     <Grid item xs={2}>
-                        <div className={classes.stats}>KO Look: {hitterData.strikeoutsLooking !== null ? hitterData.strikeoutsLooking : []}</div>
+                        <div className={classes.stats}>KO Look: {hitterData.strikeoutsLooking !== null ? hitterData.strikeoutsLooking || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>KO Swing: {hitterData.strikeoutsSwinging !== null ? hitterData.strikeoutsSwinging : []}</div>
+                        <div className={classes.stats}>KO Swing: {hitterData.strikeoutsSwinging !== null ? hitterData.strikeoutsSwinging || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>KLook: {hitterData.strikesLooking !== null ? hitterData.strikesLooking : []}</div>
+                        <div className={classes.stats}>KLook: {hitterData.strikesLooking !== null ? hitterData.strikesLooking || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>KSwing: {hitterData.strikesSwinging !== null ? hitterData.strikesSwinging : []}</div>
+                        <div className={classes.stats}>KSwing: {hitterData.strikesSwinging !== null ? hitterData.strikesSwinging || 0 : []}</div>
                     </Grid>
                 </Grid>
                 <Grid container spacing={1} justify="flex-start">
                     <Grid item xs={2}>
-                        <div className={classes.stats}>BB: {hitterData.walks !== null ? hitterData.walks : []}</div>
+                        <div className={classes.stats}>BB: {hitterData.walks !== null ? (hitterData.walks + hitterData.intentionalWalks) || 0 : []}</div>
                     </Grid>
                     <Grid item xs={2}>
-                        <div className={classes.stats}>BB per AB: {hitterData.walksPerPlateAppearance !== null ? removeLeadingZero(hitterData.walksPerPlateAppearance.toFixed(3)) : []}</div>
+                        <div className={classes.stats}>BB per AB: {hitterData.walksPerPlateAppearance !== null ? removeLeadingZero((hitterData.walksPerPlateAppearance || 0.0).toFixed(3)) : []}</div>
                     </Grid>
                 </Grid>
             </div>
+            {hitterData.opponentStats !== null && hitterData.opponentStats.length > 0 ?
+            <HitterOpponentData opponentData={hitterData.opponentStats[0]} /> :
+            <div/>
+            }
         </div>
     )
 }

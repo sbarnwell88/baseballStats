@@ -87,8 +87,11 @@ export default function Home() {
   }, []);
 
 const handleHomeTeamChange = (event) => {
+  console.log(event.target.value)
     setHomeTeam(event.target.value)
     getAwayTeam(leagueSchedule, event.target.value)
+    setPlayer(null)
+    setposition(null)
 };
 
 const handleAwayTeamChange = (event) => {
