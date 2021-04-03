@@ -3,7 +3,13 @@ const router= express.Router();
 const axios = require("axios");
 
 router.use('/', function(req, res, next) {
-    const url = 'http://localhost:8080';
+    
+    let url;
+    if (process.env.NODE_ENV === 'production') {
+        url = 'https://baseballstatsws.herokuapp.com';
+    } else {
+        url = 'http://localhost:8080';
+    }
     
     // return (req, res, next) => {
         const path = req.originalUrl.replace('api/', '')

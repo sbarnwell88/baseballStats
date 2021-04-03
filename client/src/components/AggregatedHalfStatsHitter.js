@@ -5,11 +5,13 @@ import { removeLeadingZero } from './Util';
 
 const useStyles = makeStyles((theme) => ({
     stats: {
-      textAlign: 'left'
+      textAlign: 'left',
+      fontSize: '18px'
     },
     title: {
         textAlign: 'left',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontSize: '18px'
     }
   }));
 

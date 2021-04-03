@@ -20,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
   },
   stats: {
     // padding: theme.spacing(1),
-    textAlign: 'left'
+    textAlign: 'left',
+    // fontSize: '24px'
   },
   title: {
     textAlign: 'left',

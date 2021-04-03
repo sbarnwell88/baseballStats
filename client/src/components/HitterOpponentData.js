@@ -14,16 +14,19 @@ const useStyles = makeStyles((theme) => ({
       fontSize: '20px'
     },
     stats: {
-      textAlign: 'left'
+      textAlign: 'left',
+      fontSize: '18px'
     },
     title: {
       textAlign: 'left',
       fontWeight: 'bold',
-      textDecoration: 'underline'
+      textDecoration: 'underline',
+      fontSize: '18px'
     },
     subTitle: {
       textAlign: 'left',
       fontWeight: 'bold',
+      fontSize: '18px'
     }
   }));
 
