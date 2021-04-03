@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
     // padding: theme.spacing(1),
     textAlign: 'left',
     // fontSize: '24px'
+    fontSize: '18px'
   },
   title: {
     textAlign: 'left',
