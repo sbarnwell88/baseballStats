@@ -20,7 +20,7 @@ function HandVenueHitterStats(props) {
     const classes = useStyles();
     const { title, avg, hits, doubles, triples, rbi, hr } = props;
     
-    const stats = (removeLeadingZero((avg || 0.0).toFixed(3))) + ' AVG / ' + (hits || 0) + ' H / ' + (doubles || 0) + ' 2B / ' + 
+    const stats = (avg !== 'NaN' ? removeLeadingZero((avg || 0.0).toFixed(3)) : 0) + ' AVG / ' + (hits || 0) + ' H / ' + (doubles || 0) + ' 2B / ' + 
         (triples || 0) + ' 3B / ' + (rbi || 0) + ' RBI / ' + (hr || 0) + ' HR'
 
     return (

@@ -37,7 +37,7 @@ function HitterOpponentData(props) {
 
     console.log(removeLeadingZero((opponentData.slg || 0.0).toFixed(3)))
 
-    const stats = 'AVG: ' + (removeLeadingZero((Number(opponentData.avg) || 0.0).toFixed(3))) + ' / AB: ' + (opponentData.ab || 0) + ' / Team W: ' + (opponentData.team_win || 0) + ' / Team L: ' + 
+    const stats = 'AVG: ' + (opponentData.avg !== 'NaN' ? removeLeadingZero((Number(opponentData.avg) || 0.0).toFixed(3)) : 0) + ' / AB: ' + (opponentData.ab || 0) + ' / Team W: ' + (opponentData.team_win || 0) + ' / Team L: ' + 
     (opponentData.team_loss || 0) + ' / H: ' + (opponentData.h || 0) + ' / 2B: ' + (opponentData.d || 0) + ' / 3B: ' + (opponentData.t || 0) + 
     ' / RBI: ' + (opponentData.rbi || 0) + ' / HR: ' + (opponentData.hr || 0) + ' / OBP: ' + (removeLeadingZero((opponentData.obp || 0.0).toFixed(3))) + 
     ' / OPS: ' + (removeLeadingZero((opponentData.ops || 0.0).toFixed(3))) + '/ SLG: ' + (removeLeadingZero((opponentData.slg || 0.0).toFixed(3)))
